@@ -1,7 +1,7 @@
-﻿using bauen.Utils;
-using FinalProject.DAL;
+﻿using FinalProject.DAL;
 using FinalProject.DTOs;
 using FinalProject.Models;
+using FinalProject.Utils;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -214,6 +214,10 @@ namespace FinalProject.Controllers
             if (dto.ImageFile != null && Extensions.IsImage(dto.ImageFile) && Extensions.IsvalidSize(dto.ImageFile, 500))
             {
                 user.ImageUrl = await Extensions.Upload(dto.ImageFile, @"images");
+            }
+            if (dto.CoverPicFile != null && Extensions.IsImage(dto.CoverPicFile) && Extensions.IsvalidSize(dto.CoverPicFile, 500))
+            {
+                user.CoverPicUrl = await Extensions.Upload(dto.CoverPicFile, @"images");
             }
             await _userManager.UpdateAsync(user);
             return Ok(user);

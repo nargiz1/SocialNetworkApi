@@ -21,7 +21,7 @@ namespace FinalProject.DTOs
         [MaxLength(1000)]
         public string Country { get; set; }
         public List<string> SocialMediaLinks { get; set; }
-        [NotMapped]
         public IFormFile ImageFile { get; set; }
+        public IFormFile CoverPicFile { get; set; }
     }
 }

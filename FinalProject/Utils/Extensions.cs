@@ -6,13 +6,17 @@ using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
-namespace bauen.Utils
+namespace FinalProject.Utils
 {
     public static class Extensions
     {
         public static bool IsImage(this IFormFile file)
         {
             return file.ContentType.Contains("image/");
+        }
+        public static bool IsVideo(this IFormFile file)
+        {
+            return file.ContentType.Contains("video/");
         }
         public static bool IsvalidSize(this IFormFile file, int kb)
         {

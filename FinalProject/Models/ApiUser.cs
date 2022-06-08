@@ -27,7 +27,9 @@ namespace FinalProject.Models
         public string Country { get; set; }
         public bool IsActive { get; set; }
         public string ImageUrl { get; set; }
+        public string CoverPicUrl { get; set; }
         public List<SocialMediaLink> SocialMediaLinks { get; set; }
+        public List<Post> Posts { get; set; }
 
     }
 }
