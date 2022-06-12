@@ -10,7 +10,7 @@ namespace FinalProject.Models
 {
     public class Post : Base
     {
-        [Required, MaxLength(2000)]
+        [MaxLength(2000)]
         public string Text { get; set; }
         public bool IsPrivate { get; set; }
         public string Location { get; set; }
@@ -19,5 +19,6 @@ namespace FinalProject.Models
         public List<PostImage> Images { get; set; }
         public List<PostVideo> Videos { get; set; }
         public List<PostLike> Likes { get; set; }
+        public List<Comment> Comments { get; set; }
     }
 }

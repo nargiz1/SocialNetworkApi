@@ -10,6 +10,6 @@ namespace FinalProject.Models
         public string UserId { get; set; }
         public ApiUser User { get; set; }
         public int CommentId { get; set; }
-        public PostComment Comment { get; set; }
+        public Comment Comment { get; set; }
     }
 }

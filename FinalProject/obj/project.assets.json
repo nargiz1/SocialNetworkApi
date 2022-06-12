@@ -2,6 +2,20 @@
   "version": 3,
   "targets": {
     "net5.0": {
+      "Coravel/4.1.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Caching.Memory": "3.1.0",
+          "Microsoft.Extensions.Hosting.Abstractions": "3.1.0",
+          "Microsoft.Extensions.Logging.Abstractions": "3.1.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Coravel.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Coravel.dll": {}
+        }
+      },
       "Humanizer.Core/2.8.26": {
         "type": "package",
         "compile": {
@@ -299,6 +313,33 @@
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {}
+        }
+      },
+      "Microsoft.Extensions.FileProviders.Abstractions/3.1.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "3.1.0"
+        },
+        "compile": {
+          "lib/netcoreapp3.1/Microsoft.Extensions.FileProviders.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/Microsoft.Extensions.FileProviders.Abstractions.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Hosting.Abstractions/3.1.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "3.1.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "3.1.0",
+          "Microsoft.Extensions.FileProviders.Abstractions": "3.1.0",
+          "Microsoft.Extensions.Logging.Abstractions": "3.1.0"
+        },
+        "compile": {
+          "lib/netcoreapp3.1/Microsoft.Extensions.Hosting.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/Microsoft.Extensions.Hosting.Abstractions.dll": {}
         }
       },
       "Microsoft.Extensions.Identity.Core/5.0.12": {
@@ -1550,6 +1591,19 @@
     }
   },
   "libraries": {
+    "Coravel/4.1.2": {
+      "sha512": "TYK5nJjP16b+MsIFZdDHtMq1KlIxzQZii6zuWev/X3mAfYm2XukofjVOXoipxEKoYeeE0n0ZljmIkyG1q1QweQ==",
+      "type": "package",
+      "path": "coravel/4.1.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "coravel.4.1.2.nupkg.sha512",
+        "coravel.nuspec",
+        "lib/netstandard2.0/Coravel.dll",
+        "lib/netstandard2.0/Coravel.xml"
+      ]
+    },
     "Humanizer.Core/2.8.26": {
       "sha512": "OiKusGL20vby4uDEswj2IgkdchC1yQ6rwbIkZDVBPIR6al2b7n3pC91elBul9q33KaBgRKhbZH3+2Ur4fnWx2A==",
       "type": "package",
@@ -2024,6 +2078,38 @@
         "microsoft.extensions.dependencyinjection.abstractions.nuspec",
         "useSharedDesignerContext.txt",
         "version.txt"
+      ]
+    },
+    "Microsoft.Extensions.FileProviders.Abstractions/3.1.0": {
+      "sha512": "G3iBMOnn3tETEUvkE9J3a23wQpRkiXZp73zR0XNlicjLFhkeWW1FCaC2bTjrgHhPi2KO6x0BXnHvVuJPIlygBQ==",
+      "type": "package",
+      "path": "microsoft.extensions.fileproviders.abstractions/3.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netcoreapp3.1/Microsoft.Extensions.FileProviders.Abstractions.dll",
+        "lib/netcoreapp3.1/Microsoft.Extensions.FileProviders.Abstractions.xml",
+        "lib/netstandard2.0/Microsoft.Extensions.FileProviders.Abstractions.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.FileProviders.Abstractions.xml",
+        "microsoft.extensions.fileproviders.abstractions.3.1.0.nupkg.sha512",
+        "microsoft.extensions.fileproviders.abstractions.nuspec",
+        "packageIcon.png"
+      ]
+    },
+    "Microsoft.Extensions.Hosting.Abstractions/3.1.0": {
+      "sha512": "LiOP1ceFaPBxaE28SOjtORzOVCJk33TT5VQ/Cg5EoatZh1dxpPAgAV/0ruzWKQE7WAHU3F1H9Z6rFgsQwIb9uQ==",
+      "type": "package",
+      "path": "microsoft.extensions.hosting.abstractions/3.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netcoreapp3.1/Microsoft.Extensions.Hosting.Abstractions.dll",
+        "lib/netcoreapp3.1/Microsoft.Extensions.Hosting.Abstractions.xml",
+        "lib/netstandard2.0/Microsoft.Extensions.Hosting.Abstractions.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Hosting.Abstractions.xml",
+        "microsoft.extensions.hosting.abstractions.3.1.0.nupkg.sha512",
+        "microsoft.extensions.hosting.abstractions.nuspec",
+        "packageIcon.png"
       ]
     },
     "Microsoft.Extensions.Identity.Core/5.0.12": {
@@ -5700,6 +5786,7 @@
   },
   "projectFileDependencyGroups": {
     "net5.0": [
+      "Coravel >= 4.1.2",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 5.0.16",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 5.0.12",
       "Microsoft.EntityFrameworkCore >= 5.0.17",
@@ -5752,6 +5839,10 @@
       "net5.0": {
         "targetAlias": "net5.0",
         "dependencies": {
+          "Coravel": {
+            "target": "Package",
+            "version": "[4.1.2, )"
+          },
           "Microsoft.AspNetCore.Authentication.JwtBearer": {
             "target": "Package",
             "version": "[5.0.16, )"

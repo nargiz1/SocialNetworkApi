@@ -28,7 +28,7 @@ namespace FinalProject.Utils
             string finalPath = Path.Combine( folder, fileName);
             FileStream fileStream = new FileStream(finalPath, FileMode.Create);
             await file.CopyToAsync(fileStream);
-            return finalPath;
+            return fileName;
         }
 
         public async static Task<MailMessage> SendMail(string fromUser,

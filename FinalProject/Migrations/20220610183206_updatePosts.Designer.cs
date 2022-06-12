@@ -4,14 +4,16 @@ using FinalProject.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FinalProject.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220610183206_updatePosts")]
+    partial class updatePosts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -227,6 +229,7 @@ namespace FinalProject.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Text")
+                        .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 

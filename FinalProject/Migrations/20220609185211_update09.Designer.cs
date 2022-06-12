@@ -4,14 +4,16 @@ using FinalProject.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FinalProject.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220609185211_update09")]
+    partial class update09
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -122,21 +124,18 @@ namespace FinalProject.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("FinalProject.Models.Comment", b =>
+            modelBuilder.Entity("FinalProject.Models.CommentComment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CommentId")
+                    b.Property<int>("CommentId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("PostId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -153,11 +152,9 @@ namespace FinalProject.Migrations
 
                     b.HasIndex("CommentId");
 
-                    b.HasIndex("PostId");
-
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostComments");
+                    b.ToTable("CommentComments");
                 });
 
             modelBuilder.Entity("FinalProject.Models.CommentLike", b =>
@@ -227,6 +224,7 @@ namespace FinalProject.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Text")
+                        .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
@@ -241,6 +239,44 @@ namespace FinalProject.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("FinalProject.Models.PostComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PostId1")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("PostId1");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PostComments");
                 });
 
             modelBuilder.Entity("FinalProject.Models.PostImage", b =>
@@ -474,15 +510,11 @@ namespace FinalProject.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("FinalProject.Models.Comment", b =>
+            modelBuilder.Entity("FinalProject.Models.CommentComment", b =>
                 {
-                    b.HasOne("FinalProject.Models.Comment", "ReplyComment")
-                        .WithMany("Comments")
-                        .HasForeignKey("CommentId");
-
-                    b.HasOne("FinalProject.Models.Post", "Post")
-                        .WithMany("Comments")
-                        .HasForeignKey("PostId")
+                    b.HasOne("FinalProject.Models.PostComment", "Comment")
+                        .WithMany()
+                        .HasForeignKey("CommentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -490,17 +522,15 @@ namespace FinalProject.Migrations
                         .WithMany()
                         .HasForeignKey("UserId");
 
-                    b.Navigation("Post");
-
-                    b.Navigation("ReplyComment");
+                    b.Navigation("Comment");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("FinalProject.Models.CommentLike", b =>
                 {
-                    b.HasOne("FinalProject.Models.Comment", "Comment")
-                        .WithMany("Likes")
+                    b.HasOne("FinalProject.Models.PostComment", "Comment")
+                        .WithMany()
                         .HasForeignKey("CommentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -534,6 +564,27 @@ namespace FinalProject.Migrations
                     b.HasOne("FinalProject.Models.ApiUser", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FinalProject.Models.PostComment", b =>
+                {
+                    b.HasOne("FinalProject.Models.Post", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FinalProject.Models.ApiUser", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId1");
+
+                    b.HasOne("FinalProject.Models.ApiUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Post");
 
                     b.Navigation("User");
                 });
@@ -642,13 +693,6 @@ namespace FinalProject.Migrations
                     b.Navigation("Posts");
 
                     b.Navigation("SocialMediaLinks");
-                });
-
-            modelBuilder.Entity("FinalProject.Models.Comment", b =>
-                {
-                    b.Navigation("Comments");
-
-                    b.Navigation("Likes");
                 });
 
             modelBuilder.Entity("FinalProject.Models.Post", b =>

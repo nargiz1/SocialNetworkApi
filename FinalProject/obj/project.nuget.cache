@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "qu7h11nmFKwalwfnw4jjSI+BghdyDPZw2EK+XNQbqgIIark0Jeq0Fztu/FAuIUCtft0TQnZHllmjbd9/h5tHLA==",
+  "dgSpecHash": "3M+52LspNKvuH9CDLxXbdPS9Rcjhxnf7e5KF44OlkV9gkoHXRPRbkwDHUVqWlJwD7HltoyxNn/MODSo60jTy+Q==",
   "success": true,
   "projectFilePath": "C:\\Users\\user\\Desktop\\FinalProject\\FinalProject\\FinalProject.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\user\\.nuget\\packages\\coravel\\4.1.2\\coravel.4.1.2.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\5.0.16\\microsoft.aspnetcore.authentication.jwtbearer.5.0.16.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\5.0.12\\microsoft.aspnetcore.cryptography.internal.5.0.12.nupkg.sha512",
@@ -25,6 +26,8 @@
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\5.0.0\\microsoft.extensions.configuration.abstractions.5.0.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\5.0.2\\microsoft.extensions.dependencyinjection.5.0.2.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\5.0.0\\microsoft.extensions.dependencyinjection.abstractions.5.0.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\3.1.0\\microsoft.extensions.fileproviders.abstractions.3.1.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.hosting.abstractions\\3.1.0\\microsoft.extensions.hosting.abstractions.3.1.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.identity.core\\5.0.12\\microsoft.extensions.identity.core.5.0.12.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.identity.stores\\5.0.12\\microsoft.extensions.identity.stores.5.0.12.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.logging\\5.0.0\\microsoft.extensions.logging.5.0.0.nupkg.sha512",

@@ -4,14 +4,16 @@ using FinalProject.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FinalProject.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220610174040_comment")]
+    partial class comment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -138,6 +140,9 @@ namespace FinalProject.Migrations
                     b.Property<int>("PostId")
                         .HasColumnType("int");
 
+                    b.Property<string>("PostId1")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -154,6 +159,8 @@ namespace FinalProject.Migrations
                     b.HasIndex("CommentId");
 
                     b.HasIndex("PostId");
+
+                    b.HasIndex("PostId1");
 
                     b.HasIndex("UserId");
 
@@ -227,6 +234,7 @@ namespace FinalProject.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Text")
+                        .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
@@ -480,11 +488,15 @@ namespace FinalProject.Migrations
                         .WithMany("Comments")
                         .HasForeignKey("CommentId");
 
-                    b.HasOne("FinalProject.Models.Post", "Post")
+                    b.HasOne("FinalProject.Models.Post", null)
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("FinalProject.Models.ApiUser", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId1");
 
                     b.HasOne("FinalProject.Models.ApiUser", "User")
                         .WithMany()
