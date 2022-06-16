@@ -168,15 +168,17 @@ namespace FinalProject.Controllers
             return Ok(posts);
         }
         [HttpGet("getAllPosts")]
-        public async Task<IActionResult> GetAllPosts()
+        public async Task<IActionResult> GetAllPosts([FromBody] int? skip, int? take)
         {
+            int currentSkip = skip ?? 1;
+            int currentTake = take ?? 5;
             List<Post> posts = await _db.Posts
                 .Include(x => x.Videos)
                 .Include(x => x.Likes)
                 .Include(x => x.Comments)
                 .ThenInclude(x => x.Comments)
                 .ThenInclude(x => x.Likes).ToListAsync();
-            return Ok(posts);
+            return Ok(posts.Skip(currentSkip).Take(currentTake));
         }
         [AllowAnonymous]
         [HttpGet("action")]

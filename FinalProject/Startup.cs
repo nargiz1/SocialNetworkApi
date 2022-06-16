@@ -36,6 +36,7 @@ namespace FinalProject
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddControllers(options =>
             {
                 options.OutputFormatters.RemoveType<SystemTextJsonOutputFormatter>();
@@ -88,6 +89,9 @@ namespace FinalProject
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
                 };
             });
+            services.AddAuthorization(options =>
+                options.AddPolicy("Admin", policy => policy.RequireRole("Admin"))
+            );
 
 
             services.Configure<DataProtectionTokenProviderOptions>(options =>
@@ -104,12 +108,14 @@ namespace FinalProject
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FinalProject v1"));
             }
-
             app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseCors(builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

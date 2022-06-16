@@ -2,7 +2,6 @@
 using FinalProject.DTOs;
 using FinalProject.Models;
 using FinalProject.Utils;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +11,6 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -35,10 +33,10 @@ namespace FinalProject.Controllers
 
 
         public UserController(ApiDbContext db,
-            UserManager<ApiUser> userManager, 
-            RoleManager<IdentityRole> roleManager, 
-            IConfiguration configuration, 
-            IHttpContextAccessor httpContextAccessor, 
+            UserManager<ApiUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IConfiguration configuration,
+            IHttpContextAccessor httpContextAccessor,
             SignInManager<ApiUser> signInManager)
         {
             _db = db;
@@ -90,13 +88,13 @@ namespace FinalProject.Controllers
             var EmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
             var link = Url.Action(nameof(Confirm), "User", new { email = newUser.Email, EmailToken }, Request.Scheme);
             SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
+            client.UseDefaultCredentials = false;
             client.Credentials = new NetworkCredential("testd7923@gmail.com", "121212Yy");
             client.EnableSsl = true;
 
             var message = await Extensions.SendMail("testd7923@gmail.com", newUser.Email, link, "Confirm Email", "Confirm");
             client.Send(message);
             message.Dispose();
-            newUser.EmailConfirmed = true;
             return Ok();
         }
         [HttpGet("confirmed")]
@@ -223,7 +221,7 @@ namespace FinalProject.Controllers
             return Ok(user);
         }
         [HttpPost("ForgotPassword")]
-        public async Task<IActionResult> ForgotPassword([FromBody]string email)
+        public async Task<IActionResult> ForgotPassword([FromBody] string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
@@ -231,7 +229,7 @@ namespace FinalProject.Controllers
                 return BadRequest("user not found");
             }
             var EmailToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var link = Url.Action(nameof(ResetToken), "User", new { email = user.Email, EmailToken} , Request.Scheme);
+            var link = Url.Action(nameof(ResetToken), "User", new { email = user.Email, EmailToken }, Request.Scheme);
             SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
             client.Credentials = new NetworkCredential("testd7923@gmail.com", "121212Yy");
             client.EnableSsl = true;
@@ -257,7 +255,7 @@ namespace FinalProject.Controllers
         }
 
         [HttpPost("ResetPassword")]
-        public async Task<IActionResult> ResetPassword( ResetPasswordDTO dto)
+        public async Task<IActionResult> ResetPassword(ResetPasswordDTO dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
@@ -285,14 +283,22 @@ namespace FinalProject.Controllers
             }
             return Ok(dto);
         }
-        [Authorize("Admin")]
         [HttpGet("users")]
-        public IActionResult GetAllUsers()
+        public IActionResult GetAllUsers([FromBody] int? skip, int? take)
         {
-            return Ok(new
-            {
-                _userManager.Users
-            });
+            int currentSkip = skip ?? 1;
+            int currentTake = take ?? 5;
+            List <ApiUser> users = _userManager.Users.ToList();
+            return Ok(users.Skip(currentSkip).Take(currentTake));
+        }
+        [HttpGet("seacrhUser")]
+        public IActionResult Search([FromBody]string query)
+        {
+            if (query == null) return BadRequest("NotFound");
+            List<ApiUser> users = _userManager.Users.ToList();
+            var searchedUser = users.Where(x => x.UserName.Contains(query) || x.FullName.Contains(query));
+            if (searchedUser.Count() == 0) return NotFound("User not found");
+            return Ok(searchedUser);
         }
 
         private JwtSecurityToken GetToken(List<Claim> authClaims)
@@ -309,6 +315,16 @@ namespace FinalProject.Controllers
                 );
 
             return token;
+        }
+        [HttpPost("disableUnableUser")]
+        [Authorize(Policy ="Admin")]
+        public async Task<IActionResult> DisableUnableUser([FromBody] string UserId)
+        {
+            var user = await _userManager.FindByIdAsync(UserId);
+            if (user == null) return NotFound("user not found");
+            user.IsActive = !user.IsActive;
+            await _userManager.UpdateAsync(user);
+            return Ok(user);
         }
 
         //[HttpPost("roles")]
