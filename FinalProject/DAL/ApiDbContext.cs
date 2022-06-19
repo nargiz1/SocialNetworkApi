@@ -20,5 +20,10 @@ namespace FinalProject.DAL
         public DbSet<PostImage> PostImages { get; set; }
         public DbSet<PostVideo> PostVideos { get; set; }
         public DbSet<CommentLike> CommentLikes { get; set; }
+        public DbSet<Advertisement> Advertisements { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<PrivateChat> PrivateChats { get; set; }
+        public DbSet<GroupChat> GroupChats { get; set; }
+        public DbSet<GroupChatToUser> GroupChatToUser { get; set; }
     }
 }

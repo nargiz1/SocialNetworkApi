@@ -30,6 +30,7 @@ namespace FinalProject.Models
         public string CoverPicUrl { get; set; }
         public List<SocialMediaLink> SocialMediaLinks { get; set; }
         public List<Post> Posts { get; set; }
+        public List<GroupChatToUser> GroupChats { get; set; }
 
     }
 }

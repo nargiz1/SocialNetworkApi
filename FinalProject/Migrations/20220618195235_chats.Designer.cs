@@ -4,14 +4,16 @@ using FinalProject.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FinalProject.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220618195235_chats")]
+    partial class chats
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -264,7 +266,7 @@ namespace FinalProject.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GroupChats");
+                    b.ToTable("GroupChat");
                 });
 
             modelBuilder.Entity("FinalProject.Models.GroupChatToUser", b =>
@@ -431,34 +433,6 @@ namespace FinalProject.Migrations
                     b.HasIndex("PostId");
 
                     b.ToTable("PostVideos");
-                });
-
-            modelBuilder.Entity("FinalProject.Models.PrivateChat", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Updated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserOneId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("UserTwoId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserOneId");
-
-                    b.HasIndex("UserTwoId");
-
-                    b.ToTable("PrivateChats");
                 });
 
             modelBuilder.Entity("FinalProject.Models.SocialMediaLink", b =>
@@ -739,21 +713,6 @@ namespace FinalProject.Migrations
                         .IsRequired();
 
                     b.Navigation("Post");
-                });
-
-            modelBuilder.Entity("FinalProject.Models.PrivateChat", b =>
-                {
-                    b.HasOne("FinalProject.Models.ApiUser", "UserOne")
-                        .WithMany()
-                        .HasForeignKey("UserOneId");
-
-                    b.HasOne("FinalProject.Models.ApiUser", "UserTwo")
-                        .WithMany()
-                        .HasForeignKey("UserTwoId");
-
-                    b.Navigation("UserOne");
-
-                    b.Navigation("UserTwo");
                 });
 
             modelBuilder.Entity("FinalProject.Models.SocialMediaLink", b =>

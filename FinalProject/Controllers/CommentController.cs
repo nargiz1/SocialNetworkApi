@@ -97,5 +97,12 @@ namespace FinalProject.Controllers
             List<Comment> comments = await _db.PostComments.Include(x => x.Comments).Where(x=> x.PostId == postId).ToListAsync();
             return Ok(comments);
         }
+        [HttpGet("getComment")]
+        public async Task<IActionResult> GetComment([FromBody] int commentId)
+        {
+            Comment comment = await _db.PostComments.FirstOrDefaultAsync(x => x.Id == commentId);
+            if (comment == null) return NotFound();
+            return Ok(comment);
+        }
     }
 }

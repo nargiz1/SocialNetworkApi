@@ -180,17 +180,5 @@ namespace FinalProject.Controllers
                 .ThenInclude(x => x.Likes).ToListAsync();
             return Ok(posts.Skip(currentSkip).Take(currentTake));
         }
-        [AllowAnonymous]
-        [HttpGet("action")]
-        public IActionResult Act()
-        {
-            return Ok(DateTime.Now);
-        }
-        [AllowAnonymous]
-        [HttpGet("test")]
-        public async void Test([FromBody] DateTime ExecutionTime)
-        {
-            await Task.Delay((int)ExecutionTime.Subtract(DateTime.Now).TotalMilliseconds);
-        }
     }
 }

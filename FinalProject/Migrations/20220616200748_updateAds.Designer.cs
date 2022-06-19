@@ -4,14 +4,16 @@ using FinalProject.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FinalProject.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220616200748_updateAds")]
+    partial class updateAds
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -244,82 +246,6 @@ namespace FinalProject.Migrations
                     b.ToTable("FollowModels");
                 });
 
-            modelBuilder.Entity("FinalProject.Models.GroupChat", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("Updated")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("GroupChats");
-                });
-
-            modelBuilder.Entity("FinalProject.Models.GroupChatToUser", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("GroupChatId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GroupChatId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("GroupChatToUser");
-                });
-
-            modelBuilder.Entity("FinalProject.Models.Message", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasMaxLength(3000)
-                        .HasColumnType("nvarchar(3000)");
-
-                    b.Property<DateTime>("Updated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("isRead")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Messages");
-                });
-
             modelBuilder.Entity("FinalProject.Models.Post", b =>
                 {
                     b.Property<int>("Id")
@@ -431,34 +357,6 @@ namespace FinalProject.Migrations
                     b.HasIndex("PostId");
 
                     b.ToTable("PostVideos");
-                });
-
-            modelBuilder.Entity("FinalProject.Models.PrivateChat", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Updated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserOneId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("UserTwoId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserOneId");
-
-                    b.HasIndex("UserTwoId");
-
-                    b.ToTable("PrivateChats");
                 });
 
             modelBuilder.Entity("FinalProject.Models.SocialMediaLink", b =>
@@ -667,32 +565,6 @@ namespace FinalProject.Migrations
                     b.Navigation("FollowingUser");
                 });
 
-            modelBuilder.Entity("FinalProject.Models.GroupChatToUser", b =>
-                {
-                    b.HasOne("FinalProject.Models.GroupChat", "GroupChat")
-                        .WithMany("Users")
-                        .HasForeignKey("GroupChatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FinalProject.Models.ApiUser", "User")
-                        .WithMany("GroupChats")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("GroupChat");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("FinalProject.Models.Message", b =>
-                {
-                    b.HasOne("FinalProject.Models.ApiUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("FinalProject.Models.Post", b =>
                 {
                     b.HasOne("FinalProject.Models.ApiUser", "User")
@@ -739,21 +611,6 @@ namespace FinalProject.Migrations
                         .IsRequired();
 
                     b.Navigation("Post");
-                });
-
-            modelBuilder.Entity("FinalProject.Models.PrivateChat", b =>
-                {
-                    b.HasOne("FinalProject.Models.ApiUser", "UserOne")
-                        .WithMany()
-                        .HasForeignKey("UserOneId");
-
-                    b.HasOne("FinalProject.Models.ApiUser", "UserTwo")
-                        .WithMany()
-                        .HasForeignKey("UserTwoId");
-
-                    b.Navigation("UserOne");
-
-                    b.Navigation("UserTwo");
                 });
 
             modelBuilder.Entity("FinalProject.Models.SocialMediaLink", b =>
@@ -818,8 +675,6 @@ namespace FinalProject.Migrations
 
             modelBuilder.Entity("FinalProject.Models.ApiUser", b =>
                 {
-                    b.Navigation("GroupChats");
-
                     b.Navigation("Posts");
 
                     b.Navigation("SocialMediaLinks");
@@ -830,11 +685,6 @@ namespace FinalProject.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Likes");
-                });
-
-            modelBuilder.Entity("FinalProject.Models.GroupChat", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("FinalProject.Models.Post", b =>
