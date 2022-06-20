@@ -52,7 +52,7 @@ namespace FinalProject.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterDTO dto)
+        public async Task<IActionResult> Register([FromBody]RegisterDTO dto)
         {
             var userExists = await _userManager.FindByEmailAsync(dto.Email);
             var userNameExists = await _userManager.FindByNameAsync(dto.UserName);
@@ -67,7 +67,7 @@ namespace FinalProject.Controllers
                 IsActive = true
             };
             IdentityResult identityResult = await _userManager.CreateAsync(newUser, dto.Password);
-            await _userManager.AddToRoleAsync(newUser, "Member");
+            await _db.SaveChangesAsync();
 
             if (!identityResult.Succeeded)
             {
@@ -80,6 +80,7 @@ namespace FinalProject.Controllers
                 return BadRequest("User could not be created" + stringBuilder);
             }
 
+            await _userManager.AddToRoleAsync(newUser, "Member");
             await ConfirmEmail(newUser.Email);
 
             return Ok("User was registered successfully!");
