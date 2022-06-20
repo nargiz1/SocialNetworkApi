@@ -93,10 +93,10 @@ namespace FinalProject.Controllers
             var link = Url.Action(nameof(Confirm), "User", new { email = newUser.Email, EmailToken }, Request.Scheme);
             SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
             client.UseDefaultCredentials = false;
-            client.Credentials = new NetworkCredential("testd7923@gmail.com", "121212Yy");
+            client.Credentials = new NetworkCredential("socialnetworkproj1@gmail.com", "ftdmmjgojxqtyapp");
             client.EnableSsl = true;
 
-            var message = await Extensions.SendMail("testd7923@gmail.com", newUser.Email, link, "Confirm Email", "Confirm");
+            var message = await Extensions.SendMail("socialnetworkproj1@gmail.com", newUser.Email, link, "Confirm Email", "Confirm");
             client.Send(message);
             message.Dispose();
             return Ok();
@@ -235,10 +235,10 @@ namespace FinalProject.Controllers
             var EmailToken = await _userManager.GeneratePasswordResetTokenAsync(user);
             var link = Url.Action(nameof(ResetToken), "User", new { email = user.Email, EmailToken }, Request.Scheme);
             SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
-            client.Credentials = new NetworkCredential("nargizramazanova28@gmail.com", "pnnfbyfkxpcnfevl");
+            client.Credentials = new NetworkCredential("socialnetworkproj1@gmail.com", "ftdmmjgojxqtyapp");
             client.EnableSsl = true;
 
-            var message = await Extensions.SendMail("nargizramazanova28@gmail.com", user.Email, link, "Reset Password", "Reset Password");
+            var message = await Extensions.SendMail("socialnetworkproj1@gmail.com", user.Email, link, "Reset Password", "Reset Password");
 
             client.Send(message);
             message.Dispose();
