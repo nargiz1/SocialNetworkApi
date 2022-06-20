@@ -103,11 +103,15 @@ namespace FinalProject.Controllers
             return Ok();
         }
         [HttpGet("confirmed")]
-        public async Task<IActionResult> Confirm(string email)
+        public async Task<IActionResult> Confirm(string email, string EmailToken)
         {
             ApiUser user = await _userManager.FindByEmailAsync(email);
             user.EmailConfirmed = true;
             await _userManager.UpdateAsync(user);
+            Response.Cookies.Append("jwt", EmailToken.ToString(), new CookieOptions
+            {
+                HttpOnly = true
+            });
             return Ok("Confirmed");
         }
 

@@ -1,4 +1,5 @@
 using FinalProject.DAL;
+using FinalProject.Hubs;
 using FinalProject.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -30,6 +32,7 @@ namespace FinalProject
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+            services.AddSignalR();
             services.AddControllers(options =>
             {
                 options.OutputFormatters.RemoveType<SystemTextJsonOutputFormatter>();
@@ -91,6 +94,8 @@ namespace FinalProject
             {
                 options.TokenLifespan = TimeSpan.FromHours(2);
             });
+            services.AddSingleton<IDictionary<string, UserConnection>>(options => new Dictionary<string, UserConnection>());
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
