@@ -2,6 +2,8 @@
 using FinalProject.DTOs;
 using FinalProject.Models;
 using FinalProject.Utils;
+using Google.Apis.Auth.OAuth2;
+using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -15,7 +17,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FinalProject.Controllers
@@ -231,10 +235,10 @@ namespace FinalProject.Controllers
             var EmailToken = await _userManager.GeneratePasswordResetTokenAsync(user);
             var link = Url.Action(nameof(ResetToken), "User", new { email = user.Email, EmailToken }, Request.Scheme);
             SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
-            client.Credentials = new NetworkCredential("testd7923@gmail.com", "121212Yy");
+            client.Credentials = new NetworkCredential("nargizramazanova28@gmail.com", "pnnfbyfkxpcnfevl");
             client.EnableSsl = true;
 
-            var message = await Extensions.SendMail("testd7923@gmail.com", user.Email, link, "Reset Password", "Reset Password");
+            var message = await Extensions.SendMail("nargizramazanova28@gmail.com", user.Email, link, "Reset Password", "Reset Password");
 
             client.Send(message);
             message.Dispose();
@@ -326,6 +330,7 @@ namespace FinalProject.Controllers
             await _userManager.UpdateAsync(user);
             return Ok(user);
         }
+
 
         //[HttpPost("roles")]
         //public async Task<IActionResult> InitRoles()

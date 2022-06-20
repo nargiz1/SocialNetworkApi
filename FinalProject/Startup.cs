@@ -48,6 +48,21 @@ namespace FinalProject
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "FinalProject", Version = "v1" });
+                //c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                //{
+                //    Type = SecuritySchemeType.OAuth2,
+                //    Flows = new OpenApiOAuthFlows
+                //    {
+                //        ClientCredentials = new OpenApiOAuthFlow
+                //        {
+                //            TokenUrl = new Uri("https://localhost:5001/connect/token"),
+                //            Scopes = new Dictionary<string, string>
+                //            {
+                //                {"api", "API" }
+                //            }
+                //        }
+                //    }
+                //});
             });
 
             services.AddIdentity<ApiUser, IdentityRole>(options =>
@@ -88,6 +103,14 @@ namespace FinalProject
                     ValidIssuer = Configuration["JWT:ValidIssuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
                 };
+            })
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/user/login";
+            })
+            .AddGoogle(googleOptions => {
+                googleOptions.ClientId = Configuration["Google:ClientId"];
+                googleOptions.ClientSecret = Configuration["Google:ClientSecret"];
             });
             services.AddAuthorization(options =>
                 options.AddPolicy("Admin", policy => policy.RequireRole("Admin"))
