@@ -3,25 +3,18 @@ using FinalProject.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace FinalProject
 {
@@ -48,21 +41,6 @@ namespace FinalProject
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "FinalProject", Version = "v1" });
-                //c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-                //{
-                //    Type = SecuritySchemeType.OAuth2,
-                //    Flows = new OpenApiOAuthFlows
-                //    {
-                //        ClientCredentials = new OpenApiOAuthFlow
-                //        {
-                //            TokenUrl = new Uri("https://localhost:5001/connect/token"),
-                //            Scopes = new Dictionary<string, string>
-                //            {
-                //                {"api", "API" }
-                //            }
-                //        }
-                //    }
-                //});
             });
 
             services.AddIdentity<ApiUser, IdentityRole>(options =>
@@ -103,14 +81,6 @@ namespace FinalProject
                     ValidIssuer = Configuration["JWT:ValidIssuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
                 };
-            })
-            .AddCookie(options =>
-            {
-                options.LoginPath = "/user/login";
-            })
-            .AddGoogle(googleOptions => {
-                googleOptions.ClientId = Configuration["Google:ClientId"];
-                googleOptions.ClientSecret = Configuration["Google:ClientSecret"];
             });
             services.AddAuthorization(options =>
                 options.AddPolicy("Admin", policy => policy.RequireRole("Admin"))
