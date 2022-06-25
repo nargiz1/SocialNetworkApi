@@ -170,15 +170,13 @@ namespace FinalProject.Controllers
         [HttpGet("getAllPosts")]
         public async Task<IActionResult> GetAllPosts([FromBody] PaginationDTO dto)
         {
-            int currentSkip = dto.Skip ?? 1;
-            int currentTake = dto.Take ?? 5;
             List<Post> posts = await _db.Posts
                 .Include(x => x.Videos)
                 .Include(x => x.Likes)
                 .Include(x => x.Comments)
                 .ThenInclude(x => x.Comments)
                 .ThenInclude(x => x.Likes).ToListAsync();
-            return Ok(posts.Skip(currentSkip).Take(currentTake));
+            return Ok(posts.Skip(dto.Skip).Take(dto.Take));
         }
     }
 }
