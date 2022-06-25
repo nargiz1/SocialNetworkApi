@@ -112,7 +112,7 @@ namespace FinalProject.Controllers
             {
                 HttpOnly = true
             });
-            return Ok("Confirmed");
+            return Redirect("http://localhost:3000/login");
         }
 
         [HttpPost("login")]
@@ -260,7 +260,7 @@ namespace FinalProject.Controllers
                 Email = user.Email,
                 Token = emailToken,
             };
-            return Ok(dto);
+            return RedirectToPage("http://localhost:3000/reset", dto);
         }
 
         [HttpPost("ResetPassword")]
@@ -309,7 +309,6 @@ namespace FinalProject.Controllers
             if (searchedUser.Count() == 0) return NotFound("User not found");
             return Ok(searchedUser);
         }
-
         private JwtSecurityToken GetToken(List<Claim> authClaims)
         {
 
