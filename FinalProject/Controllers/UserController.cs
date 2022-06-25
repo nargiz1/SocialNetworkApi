@@ -293,10 +293,10 @@ namespace FinalProject.Controllers
             return Ok(dto);
         }
         [HttpGet("users")]
-        public IActionResult GetAllUsers([FromBody] int? skip, int? take)
+        public IActionResult GetAllUsers([FromBody]PaginationDTO dto)
         {
-            int currentSkip = skip ?? 1;
-            int currentTake = take ?? 5;
+            int currentSkip = dto.Skip ?? 1;
+            int currentTake = dto.Take ?? 5;
             List <ApiUser> users = _userManager.Users.ToList();
             return Ok(users.Skip(currentSkip).Take(currentTake));
         }

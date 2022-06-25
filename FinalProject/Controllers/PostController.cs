@@ -168,10 +168,10 @@ namespace FinalProject.Controllers
             return Ok(posts);
         }
         [HttpGet("getAllPosts")]
-        public async Task<IActionResult> GetAllPosts([FromBody] int? skip, int? take)
+        public async Task<IActionResult> GetAllPosts([FromBody] PaginationDTO dto)
         {
-            int currentSkip = skip ?? 1;
-            int currentTake = take ?? 5;
+            int currentSkip = dto.Skip ?? 1;
+            int currentTake = dto.Take ?? 5;
             List<Post> posts = await _db.Posts
                 .Include(x => x.Videos)
                 .Include(x => x.Likes)

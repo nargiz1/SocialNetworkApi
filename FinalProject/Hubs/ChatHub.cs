@@ -15,7 +15,6 @@ namespace FinalProject.Hubs
             _botUser = "MyChatBot";
             _connections = connections;
         }
-
         public override Task OnDisconnectedAsync(Exception exception)
         {
             if (_connections.TryGetValue(Context.ConnectionId, out UserConnection userConnection))

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "jZXbayH7738SmN1Tf/4Gz1FYpYxd2HTpSLfch/vL9dnd89BEn+QOfoIq2EB17/9KXBHAxXKh1/0JfY+Zgcia/Q==",
+  "dgSpecHash": "XCR4l0IfJUOjKW/XUfMyUcjjR4hrGVI+aemQ/NJHVG+Ft30GNV4xAljKNnAizcDKzQHVHPuYji7u2NFC+znzrA==",
   "success": true,
   "projectFilePath": "C:\\Users\\user\\Desktop\\FinalProject\\FinalProject\\FinalProject.csproj",
   "expectedPackageFiles": [
@@ -79,6 +79,8 @@
     "C:\\Users\\user\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\portable.bouncycastle\\1.9.0\\portable.bouncycastle.1.9.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\runtime.native.system\\4.3.0\\runtime.native.system.4.3.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\serilog\\2.11.0\\serilog.2.11.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\serilog.sinks.console\\4.0.1\\serilog.sinks.console.4.0.1.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\swashbuckle.aspnetcore\\5.6.3\\swashbuckle.aspnetcore.5.6.3.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\5.6.3\\swashbuckle.aspnetcore.swagger.5.6.3.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\5.6.3\\swashbuckle.aspnetcore.swaggergen.5.6.3.nupkg.sha512",

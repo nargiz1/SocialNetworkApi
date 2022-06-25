@@ -112,10 +112,10 @@ namespace FinalProject.Controllers
         }
         [HttpGet("getAll")]
         [Authorize]
-        public IActionResult GetAll([FromBody] int? skip, int? take)
+        public IActionResult GetAll([FromBody] PaginationDTO dto)
         {
-            int currentSkip = skip ?? 1;
-            int currentTake = take ?? 5;
+            int currentSkip = dto.Skip ?? 1;
+            int currentTake = dto.Take ?? 5;
             return Ok(_db.Advertisements.ToList().Skip(currentSkip).Take(currentTake));
         }
 
