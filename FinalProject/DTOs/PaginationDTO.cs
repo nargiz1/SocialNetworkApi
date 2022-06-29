@@ -7,7 +7,7 @@ namespace FinalProject.DTOs
 {
     public class PaginationDTO
     {
-        public int? Skip { get; set; }
-        public int? Take { get; set; }
+        public int Skip { get; set; }
+        public int Take { get; set; }
     }
 }
