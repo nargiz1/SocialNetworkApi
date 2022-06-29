@@ -21,6 +21,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static Google.Apis.Auth.GoogleJsonWebSignature;
 
 namespace FinalProject.Controllers
 {
@@ -293,7 +294,7 @@ namespace FinalProject.Controllers
             return Ok(dto);
         }
         [HttpGet("users")]
-        public IActionResult GetAllUsers([FromBody]PaginationDTO dto)
+        public IActionResult GetAllUsers([FromQuery]PaginationDTO dto)
         {
             int currentSkip = dto.Skip ?? 1;
             int currentTake = dto.Take ?? 5;
@@ -335,6 +336,7 @@ namespace FinalProject.Controllers
             return Ok(user);
         }
 
+        
 
         //[HttpPost("roles")]
         //public async Task<IActionResult> InitRoles()

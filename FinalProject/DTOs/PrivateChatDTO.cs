@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FinalProject.Models
+namespace FinalProject.DTOs
 {
-    public class PrivateChat : Base
+    public class PrivateChatDTO
     {
         public string UserOneId { get; set; }
-        public ApiUser UserOne { get; set; }
         public string UserTwoId { get; set; }
-        public ApiUser UserTwo { get; set; }
-        public List<Message> Messages { get; set; }
     }
 }

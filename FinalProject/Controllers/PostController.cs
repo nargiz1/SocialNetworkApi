@@ -42,7 +42,7 @@ namespace FinalProject.Controllers
             var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
             ApiUser user = await _userManager.FindByEmailAsync(userEmail);
             if (user == null) return BadRequest("user not found!");
-
+            if (dto.PublicationTime < DateTime.Now) dto.PublicationTime = DateTime.Now;
             await Task.Delay((int)(dto.PublicationTime).Subtract(DateTime.Now).TotalMilliseconds);
             Post newPost = new Post()
             {
@@ -159,20 +159,18 @@ namespace FinalProject.Controllers
         {
             var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
             ApiUser user = await _userManager.FindByEmailAsync(userEmail);
+            if (user == null) return NotFound();
             List<Post> posts = await _db.Posts
-                .Include(x => x.Videos)
-                .Include(x => x.Likes)
-                .Include(x => x.Comments)
-                .ThenInclude(x => x.Comments)
-                .ThenInclude(x => x.Likes).Where(x=> x.UserId == userId).ToListAsync();
+                .Where(x=> x.UserId == userId).ToListAsync();
             return Ok(posts);
         }
         [HttpGet("getAllPosts")]
-        public async Task<IActionResult> GetAllPosts([FromBody] PaginationDTO dto)
+        public async Task<IActionResult> GetAllPosts([FromQuery] PaginationDTO dto)
         {
             int currentSkip = dto.Skip ?? 1;
             int currentTake = dto.Take ?? 5;
             List<Post> posts = await _db.Posts
+                .Include(x=> x.User)
                 .Include(x => x.Videos)
                 .Include(x => x.Likes)
                 .Include(x => x.Comments)

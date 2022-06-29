@@ -13,5 +13,9 @@ namespace FinalProject.Models
         public bool isRead { get; set; }
         public string UserId { get; set; }
         public ApiUser User { get; set; }
+        public int? PrivateChatId { get; set; }
+        public PrivateChat PrivateChat { get; set; }
+        public int? GroupChatId { get; set; }
+        public GroupChat GroupChat { get; set; }
     }
 }
