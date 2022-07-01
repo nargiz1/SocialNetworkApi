@@ -169,6 +169,7 @@ namespace FinalProject.Controllers
         {
             List<Post> posts = await _db.Posts
                 .Include(x=> x.User)
+                .Include(x=> x.Images)
                 .Include(x => x.Videos)
                 .Include(x => x.Likes)
                 .Include(x => x.Comments)
