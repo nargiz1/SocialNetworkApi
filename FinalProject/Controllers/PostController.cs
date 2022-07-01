@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -51,6 +52,7 @@ namespace FinalProject.Controllers
                 IsPrivate = dto.IsPrivate,
                 Location = dto.Location,
                 UserId = user.Id,
+                IsStory = dto.IsStory
             };
             await _db.Posts.AddAsync(newPost);
             await _db.SaveChangesAsync();
@@ -91,7 +93,18 @@ namespace FinalProject.Controllers
                     }
                 }
             }
+            //if (newPost.IsStory == true) await ExpireStory(newPost.Id);
             return Ok("Post added successfully!");
+        }
+
+        [HttpPost("story")]
+        public async Task<IActionResult> ExpireStory([FromBody] int postId)
+        {
+            Post story = await _db.Posts.FirstOrDefaultAsync(x => x.Id == postId);
+            if (story == null) return NotFound("Story not found!");
+            await Task.Delay((int)(DateTime.Now.AddSeconds(70)).Subtract(DateTime.Now).TotalMilliseconds);
+            await Delete(story.Id);
+            return Ok();
         }
 
         [HttpPost("delete")]
@@ -157,24 +170,25 @@ namespace FinalProject.Controllers
         [HttpGet("getUserPosts")]
         public async Task<IActionResult> GetUserPosts([FromBody] string userId)
         {
-            var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
-            ApiUser user = await _userManager.FindByEmailAsync(userEmail);
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null) return NotFound();
-            List<Post> posts = await _db.Posts
-                .Where(x=> x.UserId == userId).ToListAsync();
+            List<Post> posts = await _db.Posts.Where(x=> x.UserId == userId).ToListAsync();
             return Ok(posts);
         }
         [HttpGet("getAllPosts")]
         public async Task<IActionResult> GetAllPosts([FromQuery] PaginationDTO dto)
         {
+            int currentSkip = dto.Skip ?? 1;
+            int currentTake = dto.Take ?? 5;
             List<Post> posts = await _db.Posts
                 .Include(x=> x.User)
+                .Include(x=> x.Images)
                 .Include(x => x.Videos)
                 .Include(x => x.Likes)
                 .Include(x => x.Comments)
                 .ThenInclude(x => x.Comments)
                 .ThenInclude(x => x.Likes).ToListAsync();
-            return Ok(posts.Skip(dto.Skip).Take(dto.Take));
+            return Ok(posts.Skip(currentSkip).Take(currentTake));
         }
     }
 }

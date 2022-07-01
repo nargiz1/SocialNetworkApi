@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace FinalProject.DTOs
 {
-    public class PaginationDTO
+    public class ExternalAuthDto
     {
-        public int? Skip { get; set; }
-        public int? Take { get; set; }
+        public string Provider { get; set; }
+        public string IdToken { get; set; }
     }
 }

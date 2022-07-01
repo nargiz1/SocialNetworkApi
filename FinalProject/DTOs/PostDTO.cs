@@ -15,6 +15,7 @@ namespace FinalProject.DTOs
         public string Text { get; set; }
         public bool IsPrivate { get; set; }
         public string Location { get; set; }
+        public bool IsStory { get; set; }
         public List<IFormFile> ImageFiles { get; set; }
         public List<IFormFile> VideoFiles { get; set; }
         public DateTime PublicationTime { get; set; }

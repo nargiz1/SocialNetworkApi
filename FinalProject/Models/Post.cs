@@ -14,6 +14,7 @@ namespace FinalProject.Models
         public string Text { get; set; }
         public bool IsPrivate { get; set; }
         public string Location { get; set; }
+        public bool IsStory { get; set; }
         public string UserId { get; set; }
         public ApiUser User { get; set; }
         public List<PostImage> Images { get; set; }

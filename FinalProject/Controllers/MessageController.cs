@@ -54,13 +54,12 @@ namespace FinalProject.Controllers
             return Ok("Message deleted!");
         }
         [HttpGet("getMessages")]
-        public async Task<IActionResult> GetChatMessages([FromQuery] int chatId)
+        public async Task<IActionResult> GetChatMessages([FromBody] int chatId)
         {
-            PrivateChat privateChat = await _db.PrivateChats.FirstOrDefaultAsync(x => x.Id == chatId);
-            GroupChat groupChat = await _db.GroupChats.FirstOrDefaultAsync(x => x.Id == chatId);
-            if (privateChat == null && groupChat == null) return NotFound();
+            //var privateChat = await _db.PrivateChats.FirstOrDefaultAsync(x => x.Id == chatId);
+            //var groupChat = await _db.GroupChats.FirstOrDefaultAsync(x => x.Id == chatId);
+            //if (privateChat == null && groupChat == null) return NotFound();
             List<Message> messages = await _db.Messages
-                .Include(x=> x.User)
                 .Where(x => x.PrivateChatId == chatId || x.GroupChatId == chatId)
                 .ToListAsync();
             return Ok(messages);
