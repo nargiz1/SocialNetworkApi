@@ -30,7 +30,7 @@ namespace FinalProject.Controllers
                     {
                         file.CopyTo(stream);
                     }
-                    return Ok(new { dbPath });
+                    return Ok(new { fileName });
                 }
                 else
                 {

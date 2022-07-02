@@ -65,7 +65,7 @@ namespace FinalProject.Controllers
                     {
                         PostImage newPostImage = new PostImage()
                         {
-                            ImageUrl = await Extensions.Upload(item),
+                            ImageUrl = await Extensions.Upload(item, "Images"),
                             PostId = newPost.Id,
                             Created = DateTime.Now
 
@@ -83,7 +83,7 @@ namespace FinalProject.Controllers
                     {
                         PostVideo newPostVideo = new PostVideo()
                         {
-                            VideoUrl = await Extensions.Upload(item),
+                            VideoUrl = await Extensions.Upload(item, "Videos"),
                             PostId = newPost.Id,
                             Created = DateTime.Now
 
@@ -165,6 +165,10 @@ namespace FinalProject.Controllers
                 .ThenInclude(x=> x.Comments)
                 .ThenInclude(x=> x.Likes).FirstOrDefaultAsync(x => x.Id == postId);
             if (post == null) return NotFound();
+            foreach (var image in post.Images)
+            {
+                image.ImageUrl = (@"Resources\Images\" + image);
+            }
             return Ok(post);
         }
         [HttpGet("getUserPosts")]

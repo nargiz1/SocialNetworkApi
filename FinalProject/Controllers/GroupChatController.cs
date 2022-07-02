@@ -52,7 +52,7 @@ namespace FinalProject.Controllers
             }
             if(dto.ImageFile != null && Extensions.IsImage(dto.ImageFile) && Extensions.IsvalidSize(dto.ImageFile, 500))
             {
-                newGroupChat.ImageUrl = await Extensions.Upload(dto.ImageFile);
+                newGroupChat.ImageUrl = await Extensions.Upload(dto.ImageFile, "Images");
                 _db.GroupChats.Update(newGroupChat);
                 await _db.SaveChangesAsync();
             }

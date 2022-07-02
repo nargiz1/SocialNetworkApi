@@ -192,6 +192,7 @@ namespace FinalProject.Controllers
         {
             var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(userEmail);
+            user.ImageUrl = (@"Resources\Images\" + user.ImageUrl);
             return Ok(user);
         }
 
@@ -232,7 +233,7 @@ namespace FinalProject.Controllers
             var user = await _userManager.FindByEmailAsync(this.User.FindFirstValue(ClaimTypes.Email));
             if (dto.ImageFile != null && Extensions.IsImage(dto.ImageFile) && Extensions.IsvalidSize(dto.ImageFile, 500))
             {
-                user.ImageUrl = await Extensions.Upload(dto.ImageFile);
+                user.ImageUrl = await Extensions.Upload(dto.ImageFile, "Images");
             }
             await _userManager.UpdateAsync(user);
             return Ok("Profile picture updated!");
@@ -244,7 +245,7 @@ namespace FinalProject.Controllers
             var user = await _userManager.FindByEmailAsync(this.User.FindFirstValue(ClaimTypes.Email));
             if (dto.CoverPicFile != null && Extensions.IsImage(dto.CoverPicFile) && Extensions.IsvalidSize(dto.CoverPicFile, 500))
             {
-                user.CoverPicUrl = await Extensions.Upload(dto.CoverPicFile);
+                user.CoverPicUrl = await Extensions.Upload(dto.CoverPicFile, "Images");
             }
             await _userManager.UpdateAsync(user);
             return Ok("Cover picture updated!");
@@ -315,9 +316,13 @@ namespace FinalProject.Controllers
         [HttpGet("users")]
         public IActionResult GetAllUsers([FromQuery]PaginationDTO dto)
         {
-            int currentSkip = dto.Skip ?? 1;
+            int currentSkip = dto.Skip ?? 0;
             int currentTake = dto.Take ?? 5;
             List <ApiUser> users = _userManager.Users.ToList();
+            foreach (ApiUser user in users)
+            {
+                user.ImageUrl = (@"Resources\Images\" + user.ImageUrl);
+            }
             return Ok(users.Skip(currentSkip).Take(currentTake));
         }
         [HttpGet("seacrhUser")]
@@ -327,6 +332,10 @@ namespace FinalProject.Controllers
             List<ApiUser> users = _userManager.Users.ToList();
             var searchedUser = users.Where(x => x.UserName.Contains(query) || x.FullName.Contains(query));
             if (searchedUser.Count() == 0) return NotFound("User not found");
+            foreach (ApiUser user in users)
+            {
+                user.ImageUrl = (@"Resources\Images\" + user.ImageUrl);
+            }
             return Ok(searchedUser);
         }
         private JwtSecurityToken GetToken(List<Claim> authClaims)

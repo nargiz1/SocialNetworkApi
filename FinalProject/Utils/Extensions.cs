@@ -23,10 +23,10 @@ namespace FinalProject.Utils
         {
             return file.Length / 1024 < kb;
         }
-        public async static Task<string> Upload(this IFormFile image)
+        public async static Task<string> Upload(this IFormFile image, string folder)
         {
                 var file = image;
-                var folderName = Path.Combine("Resources", "Images");
+                var folderName = Path.Combine("Resources", folder);
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                 if (file.Length > 0)
                 {
@@ -37,7 +37,7 @@ namespace FinalProject.Utils
                     {
                         file.CopyTo(stream);
                     }
-                    return dbPath;
+                    return fileName;
                 }
             return "invalid";
         }
