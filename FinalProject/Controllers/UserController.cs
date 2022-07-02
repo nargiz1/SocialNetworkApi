@@ -214,6 +214,7 @@ namespace FinalProject.Controllers
                 }
                 _db.SaveChanges();
             }
+            user.FullName = dto.FullName;
             user.RelationshipStatus = dto.RelationshipStatus;
             user.Occupation = dto.Occupation;
             user.Education = dto.Education;

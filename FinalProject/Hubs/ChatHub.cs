@@ -43,7 +43,6 @@ namespace FinalProject.Hubs
             await Clients.Group(userConnection.Room).SendAsync("ReceiveMessage", _botUser, $"{userConnection.User} has joined {userConnection.Room}");
             await SendConnectedUsers(userConnection.Room);
         }
-
         public Task SendConnectedUsers(string room)
         {
             var users = _connections.Values

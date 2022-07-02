@@ -172,7 +172,15 @@ namespace FinalProject.Controllers
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null) return NotFound();
-            List<Post> posts = await _db.Posts.Where(x=> x.UserId == userId).ToListAsync();
+            List<Post> posts = await _db.Posts
+                .Include(x => x.User)
+                .Include(x => x.Images)
+                .Include(x => x.Videos)
+                .Include(x => x.Likes)
+                .Include(x => x.Comments)
+                .ThenInclude(x => x.Comments)
+                .ThenInclude(x => x.Likes)
+                .Where(x=> x.UserId == userId).ToListAsync();
             return Ok(posts);
         }
         [HttpGet("getAllPosts")]

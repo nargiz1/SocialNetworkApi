@@ -61,15 +61,15 @@ namespace FinalProject.Controllers
             return Ok(chat);
         }
         [HttpGet("getUserPrivateChats")]
-        public async Task<IActionResult> GetAll([FromBody] string userId)
+        public async Task<IActionResult> GetAll([FromQuery] string userId)
         {
             if (userId == null) return BadRequest();
             ApiUser user = await _userManager.FindByIdAsync(userId);
             if (user == null) return NotFound("User not found!");
             List<PrivateChat> chats = await _db.PrivateChats
-                .Where(x => x.UserOneId == user.Id || x.UserTwoId == userId)
                 .Include(x=> x.UserTwo)
                 .Include(x=> x.UserOne)
+                .Where(x => x.UserOneId == user.Id || x.UserTwoId == userId)
                 .ToListAsync();
             return Ok(chats);
         }
