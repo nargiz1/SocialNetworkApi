@@ -37,11 +37,11 @@ namespace FinalProject.Controllers
             };
             if (dto.ImageFile != null && Extensions.IsImage(dto.ImageFile) && Extensions.IsvalidSize(dto.ImageFile, 500))
             {
-                newAdv.ImageUrl = await Extensions.Upload(dto.ImageFile, @"files\images");
+                newAdv.ImageUrl = await Extensions.Upload(dto.ImageFile);
             }
             if (dto.VideoFile != null)
             {
-                newAdv.VideoUrl = await Extensions.Upload(dto.VideoFile, @"files\videos");
+                newAdv.VideoUrl = await Extensions.Upload(dto.VideoFile);
             }
             await _db.Advertisements.AddAsync(newAdv);
             await _db.SaveChangesAsync();
@@ -91,11 +91,11 @@ namespace FinalProject.Controllers
             advertisementToUpdate.Text = dto.Text;
             if (dto.ImageFile != null && Extensions.IsImage(dto.ImageFile) && Extensions.IsvalidSize(dto.ImageFile, 500))
             {
-                advertisementToUpdate.ImageUrl = await Extensions.Upload(dto.ImageFile, @"files\images");
+                advertisementToUpdate.ImageUrl = await Extensions.Upload(dto.ImageFile);
             }
             if (dto.VideoFile != null && Extensions.IsVideo(dto.ImageFile) && Extensions.IsvalidSize(dto.ImageFile, 1000))
             {
-                advertisementToUpdate.VideoUrl = await Extensions.Upload(dto.VideoFile, @"files\videos");
+                advertisementToUpdate.VideoUrl = await Extensions.Upload(dto.VideoFile);
             }
             advertisementToUpdate.Deadline = dto.Deadline;
             _db.Advertisements.Update(advertisementToUpdate);

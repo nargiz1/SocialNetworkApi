@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
@@ -22,13 +23,23 @@ namespace FinalProject.Utils
         {
             return file.Length / 1024 < kb;
         }
-        public async static Task<string> Upload(this IFormFile file, string folder)
+        public async static Task<string> Upload(this IFormFile image)
         {
-            string fileName = Guid.NewGuid().ToString()+"-" + file.FileName;
-            string finalPath = Path.Combine( folder, fileName);
-            FileStream fileStream = new FileStream(finalPath, FileMode.Create);
-            await file.CopyToAsync(fileStream);
-            return fileName;
+                var file = image;
+                var folderName = Path.Combine("Resources", "Images");
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                if (file.Length > 0)
+                {
+                    var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                    var fullPath = Path.Combine(pathToSave, fileName);
+                    var dbPath = Path.Combine(folderName, fileName);
+                    using (var stream = new FileStream(fullPath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
+                    return dbPath;
+                }
+            return "invalid";
         }
 
         public async static Task<MailMessage> SendMail(string fromUser,

@@ -65,7 +65,7 @@ namespace FinalProject.Controllers
                     {
                         PostImage newPostImage = new PostImage()
                         {
-                            ImageUrl = await Extensions.Upload(item, @"files\images"),
+                            ImageUrl = await Extensions.Upload(item),
                             PostId = newPost.Id,
                             Created = DateTime.Now
 
@@ -83,7 +83,7 @@ namespace FinalProject.Controllers
                     {
                         PostVideo newPostVideo = new PostVideo()
                         {
-                            VideoUrl = await Extensions.Upload(item, @"files\videos"),
+                            VideoUrl = await Extensions.Upload(item),
                             PostId = newPost.Id,
                             Created = DateTime.Now
 

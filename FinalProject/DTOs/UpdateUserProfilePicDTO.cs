@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace FinalProject.DTOs
 {
     public class UpdateUserProfilePicDTO
     {
+
         public IFormFile ImageFile { get; set; }
 
     }

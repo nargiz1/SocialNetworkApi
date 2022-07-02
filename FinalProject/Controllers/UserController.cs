@@ -232,7 +232,7 @@ namespace FinalProject.Controllers
             var user = await _userManager.FindByEmailAsync(this.User.FindFirstValue(ClaimTypes.Email));
             if (dto.ImageFile != null && Extensions.IsImage(dto.ImageFile) && Extensions.IsvalidSize(dto.ImageFile, 500))
             {
-                user.ImageUrl = await Extensions.Upload(dto.ImageFile, @"images");
+                user.ImageUrl = await Extensions.Upload(dto.ImageFile);
             }
             await _userManager.UpdateAsync(user);
             return Ok("Profile picture updated!");
@@ -244,7 +244,7 @@ namespace FinalProject.Controllers
             var user = await _userManager.FindByEmailAsync(this.User.FindFirstValue(ClaimTypes.Email));
             if (dto.CoverPicFile != null && Extensions.IsImage(dto.CoverPicFile) && Extensions.IsvalidSize(dto.CoverPicFile, 500))
             {
-                user.CoverPicUrl = await Extensions.Upload(dto.CoverPicFile, @"images");
+                user.CoverPicUrl = await Extensions.Upload(dto.CoverPicFile);
             }
             await _userManager.UpdateAsync(user);
             return Ok("Cover picture updated!");
