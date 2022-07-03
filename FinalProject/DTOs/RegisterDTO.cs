@@ -10,6 +10,7 @@ namespace FinalProject.DTOs
     {
         [Required, MaxLength(1000)]
         public string FullName { get; set; }
+        public DateTime BirthDate { get; set; }
         [Required, MaxLength(1000)]
         public string UserName { get; set; }
         [Required, EmailAddress, DataType(DataType.EmailAddress)]

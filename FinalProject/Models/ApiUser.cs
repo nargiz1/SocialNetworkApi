@@ -13,8 +13,7 @@ namespace FinalProject.Models
     {
         [Required, MaxLength(1000)]
         public string FullName { get; set; }
-        [MaxLength(10)]
-        public string BirthDate { get; set; }
+        public DateTime BirthDate { get; set; }
         [MaxLength(500)]
         public string RelationshipStatus { get; set; }
         [MaxLength(500)]

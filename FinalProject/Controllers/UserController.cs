@@ -59,7 +59,9 @@ namespace FinalProject.Controllers
             var userNameExists = await _userManager.FindByNameAsync(dto.UserName);
             if (userExists != null) return BadRequest("User Exists!");
             if (userNameExists != null) return BadRequest("User Name Exists!");
-
+            DateTime today = DateTime.Today;
+            int age = today.Year - dto.BirthDate.Year;
+            if (age <= 12) return BadRequest("User cannot be younger than 12 years old!");
             ApiUser newUser = new ApiUser()
             {
                 FullName = dto.FullName,
@@ -221,7 +223,7 @@ namespace FinalProject.Controllers
             user.Education = dto.Education;
             user.Status = dto.Status;
             user.Country = dto.Country;
-            
+            user.PhoneNumber = dto.PhoneNumber;
             
             await _userManager.UpdateAsync(user);
             return Ok(user);

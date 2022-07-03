@@ -3,18 +3,14 @@ using FinalProject.DTOs;
 using FinalProject.Models;
 using FinalProject.Utils;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -57,11 +53,11 @@ namespace FinalProject.Controllers
             await _db.Posts.AddAsync(newPost);
             await _db.SaveChangesAsync();
 
-            if(dto.ImageFiles != null)
+            if (dto.ImageFiles != null)
             {
-                foreach(IFormFile item in dto.ImageFiles)
+                foreach (IFormFile item in dto.ImageFiles)
                 {
-                    if(Extensions.IsImage(item) && Extensions.IsvalidSize(item, 500))
+                    if (Extensions.IsImage(item) && Extensions.IsvalidSize(item, 500))
                     {
                         PostImage newPostImage = new PostImage()
                         {
@@ -110,11 +106,11 @@ namespace FinalProject.Controllers
         [HttpPost("delete")]
         public async Task<IActionResult> Delete([FromBody] int postToDeleteId)
         {
-            Post postToDelete = await _db.Posts.Include(x => x.Images).Include(x=> x.Videos).FirstOrDefaultAsync(x => x.Id == postToDeleteId);
+            Post postToDelete = await _db.Posts.Include(x => x.Images).Include(x => x.Videos).FirstOrDefaultAsync(x => x.Id == postToDeleteId);
             if (postToDelete == null) return BadRequest("Post not found");
             if (postToDelete.Images != null)
             {
-                foreach(PostImage item in postToDelete.Images)
+                foreach (PostImage item in postToDelete.Images)
                 {
                     string filePath = Path.Combine(@"Files", @"images", item.ImageUrl);
                     if (System.IO.File.Exists(filePath))
@@ -134,8 +130,6 @@ namespace FinalProject.Controllers
                     }
                 }
             }
-
-
             _db.Posts.Remove(postToDelete);
             await _db.SaveChangesAsync();
             return Ok("Post deleted successfully!");
@@ -156,24 +150,29 @@ namespace FinalProject.Controllers
             return Ok(postToUpdate);
         }
         [HttpGet("getPost")]
-        public async Task<IActionResult> GetPost([FromBody] int postId)
+        public async Task<IActionResult> GetPost([FromBody] int Id)
         {
-            Post post = await _db.Posts.Include(x => x.Images)
+            var post = await _db.Posts
+                .Include(x => x.User)
+                .Include(x => x.Images)
                 .Include(x => x.Videos)
                 .Include(x => x.Likes)
                 .Include(x => x.Comments)
-                .ThenInclude(x=> x.Comments)
-                .ThenInclude(x=> x.Likes).FirstOrDefaultAsync(x => x.Id == postId);
+                .ThenInclude(x => x.Comments)
+                .ThenInclude(x => x.Likes)
+                .FirstOrDefaultAsync(x => x.Id == Id);
             if (post == null) return NotFound();
-            foreach (var image in post.Images)
+            foreach(PostImage item in post.Images)
             {
-                image.ImageUrl = (@"Resources\Images\" + image);
+                item.ImageUrl = (@"Resources\Images\" + item.ImageUrl);
             }
             return Ok(post);
         }
         [HttpGet("getUserPosts")]
-        public async Task<IActionResult> GetUserPosts([FromBody] string userId)
+        public async Task<IActionResult> GetUserPosts([FromBody] string userId, [FromQuery] PaginationDTO dto)
         {
+            int currentSkip = dto.Skip ?? 1;
+            int currentTake = dto.Take ?? 5;
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null) return NotFound();
             List<Post> posts = await _db.Posts
@@ -184,7 +183,12 @@ namespace FinalProject.Controllers
                 .Include(x => x.Comments)
                 .ThenInclude(x => x.Comments)
                 .ThenInclude(x => x.Likes)
-                .Where(x=> x.UserId == userId).ToListAsync();
+                .Where(x => x.UserId == userId).Skip(currentSkip).Take(currentTake).ToListAsync();
+            foreach(var item in posts)
+            {
+                await _db.PostImages.Where(x => x.PostId == item.Id).ForEachAsync(x => x.ImageUrl = (@"Resources\Images\" + x.ImageUrl));
+                await _db.PostVideos.Where(x => x.PostId == item.Id).ForEachAsync(x => x.VideoUrl = (@"Resources\Videos\" + x.VideoUrl));
+            }
             return Ok(posts);
         }
         [HttpGet("getAllPosts")]
@@ -193,14 +197,19 @@ namespace FinalProject.Controllers
             int currentSkip = dto.Skip ?? 1;
             int currentTake = dto.Take ?? 5;
             List<Post> posts = await _db.Posts
-                .Include(x=> x.User)
-                .Include(x=> x.Images)
+                .Include(x => x.User)
+                .Include(x => x.Images)
                 .Include(x => x.Videos)
                 .Include(x => x.Likes)
                 .Include(x => x.Comments)
                 .ThenInclude(x => x.Comments)
-                .ThenInclude(x => x.Likes).ToListAsync();
-            return Ok(posts.Skip(currentSkip).Take(currentTake));
+                .ThenInclude(x => x.Likes).Skip(currentSkip).Take(currentTake).ToListAsync();
+            foreach (var item in posts)
+            {
+                await _db.PostImages.Where(x => x.PostId == item.Id).ForEachAsync(x => x.ImageUrl = (@"Resources\Images\" + x.ImageUrl));
+                await _db.PostVideos.Where(x => x.PostId == item.Id).ForEachAsync(x => x.VideoUrl = (@"Resources\Videos\" + x.VideoUrl));
+            }
+            return Ok(posts);
         }
     }
 }

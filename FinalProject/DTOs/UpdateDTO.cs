@@ -22,6 +22,7 @@ namespace FinalProject.DTOs
         public string Status { get; set; }
         [MaxLength(1000)]
         public string Country { get; set; }
+        public string PhoneNumber { get; set; }
         public List<string> SocialMediaLinks { get; set; }
     }
 }
