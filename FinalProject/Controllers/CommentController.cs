@@ -94,7 +94,7 @@ namespace FinalProject.Controllers
         {
             Post post = await _db.Posts.FirstOrDefaultAsync(x => x.Id == postId);
             if (post == null) return NotFound();
-            List<Comment> comments = await _db.PostComments.Include(x => x.Comments).Where(x=> x.PostId == postId).ToListAsync();
+            List<Comment> comments = await _db.PostComments.Include(x => x.Comments).Where(x=> x.PostId == postId).OrderBy(x=> x.Created).ToListAsync();
             return Ok(comments);
         }
         [HttpGet("getComment")]

@@ -61,6 +61,7 @@ namespace FinalProject.Controllers
             if (privateChat == null && groupChat == null) return NotFound();
             List<Message> messages = await _db.Messages
                 .Where(x => x.PrivateChatId == chatId || x.GroupChatId == chatId)
+                .OrderBy(x => x.Created)
                 .ToListAsync();
             return Ok(messages);
         }

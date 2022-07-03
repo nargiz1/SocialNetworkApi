@@ -116,7 +116,7 @@ namespace FinalProject.Controllers
         {
             int currentSkip = dto.Skip ?? 1;
             int currentTake = dto.Take ?? 5;
-            return Ok(_db.Advertisements.ToList().Skip(currentSkip).Take(currentTake));
+            return Ok(_db.Advertisements.ToList().Skip(currentSkip).Take(currentTake).OrderBy(x=> x.Created));
         }
 
         //[HttpPost("confirm")]

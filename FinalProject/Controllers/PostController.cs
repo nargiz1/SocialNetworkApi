@@ -112,7 +112,7 @@ namespace FinalProject.Controllers
             {
                 foreach (PostImage item in postToDelete.Images)
                 {
-                    string filePath = Path.Combine(@"Files", @"images", item.ImageUrl);
+                    string filePath = Path.Combine(@"Response", @"images", item.ImageUrl);
                     if (System.IO.File.Exists(filePath))
                     {
                         System.IO.File.Delete(filePath);
@@ -183,7 +183,7 @@ namespace FinalProject.Controllers
                 .Include(x => x.Comments)
                 .ThenInclude(x => x.Comments)
                 .ThenInclude(x => x.Likes)
-                .Where(x => x.UserId == userId).Skip(currentSkip).Take(currentTake).ToListAsync();
+                .Where(x => x.UserId == userId).OrderBy(x => x.Created).Skip(currentSkip).Take(currentTake).ToListAsync();
             foreach(var item in posts)
             {
                 await _db.PostImages.Where(x => x.PostId == item.Id).ForEachAsync(x => x.ImageUrl = (@"Resources\Images\" + x.ImageUrl));
@@ -203,7 +203,7 @@ namespace FinalProject.Controllers
                 .Include(x => x.Likes)
                 .Include(x => x.Comments)
                 .ThenInclude(x => x.Comments)
-                .ThenInclude(x => x.Likes).Skip(currentSkip).Take(currentTake).ToListAsync();
+                .ThenInclude(x => x.Likes).Skip(currentSkip).Take(currentTake).OrderBy(x => x.Created).ToListAsync();
             foreach (var item in posts)
             {
                 await _db.PostImages.Where(x => x.PostId == item.Id).ForEachAsync(x => x.ImageUrl = (@"Resources\Images\" + x.ImageUrl));

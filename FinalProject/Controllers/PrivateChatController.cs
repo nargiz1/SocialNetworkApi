@@ -58,6 +58,8 @@ namespace FinalProject.Controllers
                 .Include(x=> x.Messages)
                 .FirstOrDefaultAsync(x => x.Id == chatId);
             if (chat == null) return NotFound("Chat not found");
+            chat.UserOne.ImageUrl = @"Resources\Images\" + chat.UserOne.ImageUrl;
+            chat.UserTwo.ImageUrl = @"Resources\Images\" + chat.UserTwo.ImageUrl;
             return Ok(chat);
         }
         [HttpGet("getUserPrivateChats")]
@@ -71,6 +73,11 @@ namespace FinalProject.Controllers
                 .Include(x=> x.UserOne)
                 .Where(x => x.UserOneId == user.Id || x.UserTwoId == userId)
                 .ToListAsync();
+            foreach(PrivateChat item in chats)
+            {
+                item.UserOne.ImageUrl = @"Resources\Images\" + item.UserOne.ImageUrl;
+                item.UserTwo.ImageUrl = @"Resources\Images\" + item.UserTwo.ImageUrl;
+            }
             return Ok(chats);
         }
     }
