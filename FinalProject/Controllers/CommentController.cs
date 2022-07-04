@@ -78,7 +78,7 @@ namespace FinalProject.Controllers
             return Ok("Comment deleted");
         }
         [HttpPost("update")]
-        public async Task<IActionResult> Update([FromBody] CommentDTO updatedComment)
+        public async Task<IActionResult> Update([FromBody] UpdateCommentDTO updatedComment)
         {
             var commentToUpdate = await _db.PostComments.FirstOrDefaultAsync(x => x.Id == updatedComment.Id);
             if (commentToUpdate == null) return NotFound("Comment not found!");
@@ -94,7 +94,7 @@ namespace FinalProject.Controllers
         {
             Post post = await _db.Posts.FirstOrDefaultAsync(x => x.Id == postId);
             if (post == null) return NotFound();
-            List<Comment> comments = await _db.PostComments.Include(x => x.Comments).Where(x=> x.PostId == postId).OrderBy(x=> x.Created).ToListAsync();
+            List<Comment> comments = await _db.PostComments.Include(x => x.Comments).Where(x=> x.PostId == postId).OrderByDescending(x=> x.Created).ToListAsync();
             return Ok(comments);
         }
         [HttpGet("getComment")]

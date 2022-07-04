@@ -63,7 +63,7 @@ namespace FinalProject.Controllers
             if (advToDelete == null) return NotFound("Advertisement not found!");
             if(advToDelete.ImageUrl != null)
             {
-                string filePath = Path.Combine(@"Files", @"images", advToDelete.ImageUrl);
+                string filePath = Path.Combine(@"Resources", @"images", advToDelete.ImageUrl);
                 if (System.IO.File.Exists(filePath))
                 {
                     System.IO.File.Delete(filePath);
@@ -71,7 +71,7 @@ namespace FinalProject.Controllers
             }
             if (advToDelete.VideoUrl != null)
             {
-                string filePath = Path.Combine(@"Files", @"videos", advToDelete.VideoUrl);
+                string filePath = Path.Combine(@"Resources", @"videos", advToDelete.VideoUrl);
                 if (System.IO.File.Exists(filePath))
                 {
                     System.IO.File.Delete(filePath);
@@ -108,6 +108,8 @@ namespace FinalProject.Controllers
         {
             Advertisement adv = await _db.Advertisements.FirstOrDefaultAsync(x => x.Id == advId);
             if (adv == null) return NotFound("Advertisement not found!");
+            adv.ImageUrl = (@"Resources\Images\" + adv.ImageUrl);
+            adv.VideoUrl = (@"Resources\Videos\" + adv.VideoUrl);
             return Ok(adv);
         }
         [HttpGet("getAll")]
@@ -116,7 +118,13 @@ namespace FinalProject.Controllers
         {
             int currentSkip = dto.Skip ?? 1;
             int currentTake = dto.Take ?? 5;
-            return Ok(_db.Advertisements.ToList().Skip(currentSkip).Take(currentTake).OrderBy(x=> x.Created));
+            List<Advertisement> ads = _db.Advertisements.Skip(currentSkip).Take(currentTake).OrderByDescending(x => x.Created).ToList();
+            foreach (var item in ads)
+            {
+                item.ImageUrl = (@"Resources\Images\" + item.ImageUrl);
+                item.VideoUrl = (@"Resources\Videos\" + item.VideoUrl);
+            }
+            return Ok();
         }
 
         //[HttpPost("confirm")]

@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -235,6 +236,11 @@ namespace FinalProject.Controllers
             var user = await _userManager.FindByEmailAsync(this.User.FindFirstValue(ClaimTypes.Email));
             if (dto.ImageFile != null && Extensions.IsImage(dto.ImageFile) && Extensions.IsvalidSize(dto.ImageFile, 500))
             {
+                string filePath = Path.Combine(@"Resources", @"images", user.ImageUrl);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
                 user.ImageUrl = await Extensions.Upload(dto.ImageFile, "Images");
             }
             await _userManager.UpdateAsync(user);
@@ -247,6 +253,11 @@ namespace FinalProject.Controllers
             var user = await _userManager.FindByEmailAsync(this.User.FindFirstValue(ClaimTypes.Email));
             if (dto.CoverPicFile != null && Extensions.IsImage(dto.CoverPicFile) && Extensions.IsvalidSize(dto.CoverPicFile, 500))
             {
+                string filePath = Path.Combine(@"Resources", @"images", user.CoverPicUrl);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
                 user.CoverPicUrl = await Extensions.Upload(dto.CoverPicFile, "Images");
             }
             await _userManager.UpdateAsync(user);

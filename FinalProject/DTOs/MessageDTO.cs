@@ -10,8 +10,8 @@ namespace FinalProject.DTOs
     {
         [Required, MaxLength(3000)]
         public string Text { get; set; }
-        //public bool isRead { get; set; }
-        //public int? PrivateChatId { get; set; }
-        //public int? GroupChatId { get; set; }
+        public bool isRead { get; set; }
+        public int? PrivateChatId { get; set; }
+        public int? GroupChatId { get; set; }
     }
 }

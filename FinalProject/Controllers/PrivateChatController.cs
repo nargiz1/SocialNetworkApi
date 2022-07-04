@@ -50,12 +50,12 @@ namespace FinalProject.Controllers
             return Ok("Chat deleted!");
         }
         [HttpGet("getChat")]
-        public async Task<IActionResult> GetChat([FromBody] int chatId)
+        public async Task<IActionResult> GetChat([FromQuery] int? chatId)
         {
+            if (chatId == null) return Ok();
             PrivateChat chat = await _db.PrivateChats
                 .Include(x=> x.UserOne)
                 .Include(x=> x.UserTwo)
-                .Include(x=> x.Messages)
                 .FirstOrDefaultAsync(x => x.Id == chatId);
             if (chat == null) return NotFound("Chat not found");
             chat.UserOne.ImageUrl = @"Resources\Images\" + chat.UserOne.ImageUrl;

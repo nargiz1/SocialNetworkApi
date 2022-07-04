@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -63,6 +64,14 @@ namespace FinalProject.Controllers
         {
             GroupChat chatToDelete = await _db.GroupChats.FirstOrDefaultAsync(x => x.Id == groupId);
             if (chatToDelete == null) return NotFound("Chat not found!");
+            if (chatToDelete.ImageUrl != null)
+            {
+                string filePath = Path.Combine(@"Resources", @"images", chatToDelete.ImageUrl);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+            }
             _db.GroupChats.Remove(chatToDelete);
             await _db.SaveChangesAsync();
             return Ok("Group deleted!");

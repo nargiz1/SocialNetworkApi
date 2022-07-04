@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FinalProject.DTOs;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 
 namespace FinalProject.Hubs
 {
@@ -28,7 +29,7 @@ namespace FinalProject.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        public async Task SendMessage(MessageDTO message)
+        public async Task SendMessage(string message)
         {
             if (_connections.TryGetValue(Context.ConnectionId, out UserConnection userConnection))
             {
