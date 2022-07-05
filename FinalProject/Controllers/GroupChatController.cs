@@ -91,6 +91,10 @@ namespace FinalProject.Controllers
                 .Include(x=> x.Messages)
                 .FirstOrDefaultAsync(x => x.Id == chatId);
             if (group == null) return NotFound("Group is not found");
+            if (!group.ImageUrl.Contains(@"Resources\Images\"))
+            {
+                group.ImageUrl = (@"Resources\Images\" + group.ImageUrl);
+            }
             return Ok(group);
         }
         //[HttpGet("getUserGroupChats")]

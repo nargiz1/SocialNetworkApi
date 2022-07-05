@@ -56,10 +56,14 @@ namespace FinalProject.Controllers
             PrivateChat chat = await _db.PrivateChats
                 .Include(x=> x.UserOne)
                 .Include(x=> x.UserTwo)
+                .Include(x=> x.Messages)
                 .FirstOrDefaultAsync(x => x.Id == chatId);
             if (chat == null) return NotFound("Chat not found");
-            chat.UserOne.ImageUrl = @"Resources\Images\" + chat.UserOne.ImageUrl;
-            chat.UserTwo.ImageUrl = @"Resources\Images\" + chat.UserTwo.ImageUrl;
+            if(!(chat.UserOne.ImageUrl.Contains(@"Resources\Images\") && chat.UserTwo.ImageUrl.Contains(@"Resources\Images\")))
+            {
+                chat.UserOne.ImageUrl = @"Resources\Images\" + chat.UserOne.ImageUrl;
+                chat.UserTwo.ImageUrl = @"Resources\Images\" + chat.UserTwo.ImageUrl;
+            }
             return Ok(chat);
         }
         [HttpGet("getUserPrivateChats")]
@@ -75,8 +79,11 @@ namespace FinalProject.Controllers
                 .ToListAsync();
             foreach(PrivateChat item in chats)
             {
-                item.UserOne.ImageUrl = @"Resources\Images\" + item.UserOne.ImageUrl;
-                item.UserTwo.ImageUrl = @"Resources\Images\" + item.UserTwo.ImageUrl;
+                if (!(item.UserOne.ImageUrl.Contains(@"Resources\Images\") && item.UserTwo.ImageUrl.Contains(@"Resources\Images\")))
+                {
+                    item.UserOne.ImageUrl = @"Resources\Images\" + item.UserOne.ImageUrl;
+                    item.UserTwo.ImageUrl = @"Resources\Images\" + item.UserTwo.ImageUrl;
+                }
             }
             return Ok(chats);
         }

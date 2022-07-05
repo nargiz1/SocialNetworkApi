@@ -108,8 +108,11 @@ namespace FinalProject.Controllers
         {
             Advertisement adv = await _db.Advertisements.FirstOrDefaultAsync(x => x.Id == advId);
             if (adv == null) return NotFound("Advertisement not found!");
-            adv.ImageUrl = (@"Resources\Images\" + adv.ImageUrl);
-            adv.VideoUrl = (@"Resources\Videos\" + adv.VideoUrl);
+            if(!(adv.ImageUrl.Contains(@"Resources\Images\") && adv.VideoUrl.Contains(@"Resources\Videos\")))
+            {
+                adv.ImageUrl = (@"Resources\Images\" + adv.ImageUrl);
+                adv.VideoUrl = (@"Resources\Videos\" + adv.VideoUrl);
+            }
             return Ok(adv);
         }
         [HttpGet("getAll")]
@@ -121,8 +124,11 @@ namespace FinalProject.Controllers
             List<Advertisement> ads = _db.Advertisements.Skip(currentSkip).Take(currentTake).OrderByDescending(x => x.Created).ToList();
             foreach (var item in ads)
             {
-                item.ImageUrl = (@"Resources\Images\" + item.ImageUrl);
-                item.VideoUrl = (@"Resources\Videos\" + item.VideoUrl);
+                if (!(item.ImageUrl.Contains(@"Resources\Images\") && item.VideoUrl.Contains(@"Resources\Videos\")))
+                {
+                    item.ImageUrl = (@"Resources\Images\" + item.ImageUrl);
+                    item.VideoUrl = (@"Resources\Videos\" + item.VideoUrl);
+                }
             }
             return Ok();
         }

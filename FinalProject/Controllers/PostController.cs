@@ -164,7 +164,14 @@ namespace FinalProject.Controllers
             if (post == null) return NotFound();
             foreach(PostImage item in post.Images)
             {
-                item.ImageUrl = (@"Resources\Images\" + item.ImageUrl);
+                if (!item.ImageUrl.Contains(@"Resources\Images\"))
+                {
+                    item.ImageUrl = (@"Resources\Images\" + item.ImageUrl);
+                }
+            }
+            foreach (PostVideo item in post.Videos)
+            {
+                Video(item.VideoUrl);
             }
             return Ok(post);
         }
@@ -186,8 +193,8 @@ namespace FinalProject.Controllers
                 .Where(x => x.UserId == userId).OrderByDescending(x => x.Created).Skip(currentSkip).Take(currentTake).ToListAsync();
             foreach(var item in posts)
             {
-                await _db.PostImages.Where(x => x.PostId == item.Id).ForEachAsync(x => x.ImageUrl = (@"Resources\Images\" + x.ImageUrl));
-                await _db.PostVideos.Where(x => x.PostId == item.Id).ForEachAsync(x => x.VideoUrl = (@"Resources\Videos\" + x.VideoUrl));
+                await _db.PostImages.Where(x => x.PostId == item.Id).ForEachAsync(x => Image(x.ImageUrl));
+                await _db.PostVideos.Where(x => x.PostId == item.Id).ForEachAsync(x => Video(x.VideoUrl));
             }
             return Ok(posts);
         }
@@ -206,10 +213,28 @@ namespace FinalProject.Controllers
                 .ThenInclude(x => x.Likes).Skip(currentSkip).Take(currentTake).OrderByDescending(x => x.Created).ToListAsync();
             foreach (var item in posts)
             {
-                await _db.PostImages.Where(x => x.PostId == item.Id).ForEachAsync(x => x.ImageUrl = (@"Resources\Images\" + x.ImageUrl));
-                await _db.PostVideos.Where(x => x.PostId == item.Id).ForEachAsync(x => x.VideoUrl = (@"Resources\Videos\" + x.VideoUrl));
+                await _db.PostImages.Where(x => x.PostId == item.Id).ForEachAsync(x => Image(x.ImageUrl));
+                await _db.PostVideos.Where(x => x.PostId == item.Id).ForEachAsync(x => Video(x.VideoUrl));
             }
             return Ok(posts);
+        }
+        [HttpGet("image")]
+        public string Image(string url)
+        {
+            if (!url.Contains(@"Resources\Images\"))
+            {
+                url = @"Resources\Images\" + url;
+            }
+            return url;
+        }
+        [HttpGet("video")]
+        public string Video(string url)
+        {
+            if (!url.Contains(@"Resources\Videos\"))
+            {
+                url = @"Resources\Videos\" + url;
+            }
+            return url;
         }
     }
 }

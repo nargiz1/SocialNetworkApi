@@ -195,7 +195,10 @@ namespace FinalProject.Controllers
         {
             var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(userEmail);
-            user.ImageUrl = (@"Resources\Images\" + user.ImageUrl);
+            if (!user.ImageUrl.Contains(@"Resources\Images\"))
+            {
+                user.ImageUrl = (@"Resources\Images\" + user.ImageUrl);
+            }
             return Ok(user);
         }
 
