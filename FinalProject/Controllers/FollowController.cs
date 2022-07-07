@@ -28,7 +28,7 @@ namespace FinalProject.Controllers
         }
 
         [HttpPost("follow")]
-        public async Task<IActionResult> Follow([FromBody]string followedUserId)
+        public async Task<IActionResult> Follow([FromBody] string followedUserId)
         {
             if (followedUserId == null) return BadRequest("user cannot be null!");
             var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
@@ -49,7 +49,7 @@ namespace FinalProject.Controllers
             return Ok("You are following user now!");
         }
         [HttpPost("unFollow")]
-        public async Task<IActionResult> UnFollow([FromBody]string followedUserId)
+        public async Task<IActionResult> UnFollow([FromBody] string followedUserId)
         {
             if (followedUserId == null) return BadRequest();
             var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
@@ -65,7 +65,7 @@ namespace FinalProject.Controllers
             return Ok("You unfollowed user!");
         }
         [HttpPost("deleteFollower")]
-        public async Task<IActionResult> DeleteFollower([FromBody]string followingUserId)
+        public async Task<IActionResult> DeleteFollower([FromBody] string followingUserId)
         {
             var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(userEmail);
@@ -83,16 +83,28 @@ namespace FinalProject.Controllers
             ApiUser user = await _userManager.FindByIdAsync(userId);
             if (user == null) return NotFound("User not found!");
             List<ApiUser> followers = new List<ApiUser>();
-            List<FollowModel> follows = await _db.FollowModels.ToListAsync();
+            List<FollowModel> follows = await _db.FollowModels.Where(x => x.FollowedUserId == userId).ToListAsync();
             foreach (FollowModel item in follows)
             {
-                if(item.FollowedUserId == user.Id)
-                {
-                    ApiUser follower = await _userManager.FindByIdAsync(item.FollowingUserId);
-                    followers.Add(follower);
-                }
+                ApiUser follower = await _userManager.FindByIdAsync(item.FollowingUserId);
+                followers.Add(follower);
             }
             return Ok(followers);
+        }
+        [HttpGet("getSubscribes")]
+        public async Task<IActionResult> GetSubscribes([FromBody] string userId)
+        {
+            if (userId == null) return BadRequest("User not found");
+            ApiUser user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound("User not found!");
+            List<ApiUser> subscribes = new List<ApiUser>();
+            List<FollowModel> follows = await _db.FollowModels.Where(x => x.FollowingUserId == userId).ToListAsync();
+            foreach (FollowModel item in follows)
+            {
+                ApiUser follower = await _userManager.FindByIdAsync(item.FollowingUserId);
+                subscribes.Add(follower);
+            }
+            return Ok(subscribes);
         }
     }
 }
