@@ -29,7 +29,7 @@ namespace FinalProject.Controllers
         public async Task<IActionResult> CreateMessage([FromBody] MessageDTO dto)
         {
             if (string.IsNullOrEmpty(dto.Text)) return BadRequest();
-            //if (dto.PrivateChatId == null && dto.GroupChatId == null) return BadRequest();
+            if (dto.PrivateChatId == null && dto.GroupChatId == null) return BadRequest("Choose chat");
             var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(userEmail);
             Message newMessage = new Message()
@@ -37,8 +37,8 @@ namespace FinalProject.Controllers
                 Text = dto.Text,
                 Created = DateTime.Now,
                 UserId = user.Id,
-                PrivateChatId = 5,
-                isRead = false
+                PrivateChatId = dto.PrivateChatId,
+                isRead = dto.isRead
             };
             await _db.Messages.AddAsync(newMessage);
             await _db.SaveChangesAsync();
@@ -61,6 +61,7 @@ namespace FinalProject.Controllers
             var groupChat = await _db.GroupChats.FirstOrDefaultAsync(x => x.Id == chatId);
             if (privateChat == null && groupChat == null) return NotFound();
             List<Message> messages = await _db.Messages
+                .Include(x=> x.User)
                 .Where(x => x.PrivateChatId == chatId || x.GroupChatId == chatId)
                 .OrderBy(x => x.Created)
                 .ToListAsync();

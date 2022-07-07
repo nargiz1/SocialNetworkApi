@@ -193,8 +193,8 @@ namespace FinalProject.Controllers
                 .Where(x => x.UserId == userId).OrderByDescending(x => x.Created).Skip(currentSkip).Take(currentTake).ToListAsync();
             foreach(var item in posts)
             {
-                await _db.PostImages.Where(x => x.PostId == item.Id).ForEachAsync(x => Image(x.ImageUrl));
-                await _db.PostVideos.Where(x => x.PostId == item.Id).ForEachAsync(x => Video(x.VideoUrl));
+                item.Images.ForEach(x => Image(x.ImageUrl));
+                item.Videos.ForEach(x => Video(x.VideoUrl));
             }
             return Ok(posts);
         }
@@ -213,8 +213,8 @@ namespace FinalProject.Controllers
                 .ThenInclude(x => x.Likes).Skip(currentSkip).Take(currentTake).OrderByDescending(x => x.Created).ToListAsync();
             foreach (var item in posts)
             {
-                await _db.PostImages.Where(x => x.PostId == item.Id).ForEachAsync(x => Image(x.ImageUrl));
-                await _db.PostVideos.Where(x => x.PostId == item.Id).ForEachAsync(x => Video(x.VideoUrl));
+                item.Images.ForEach(x => Image(x.ImageUrl));
+                item.Videos.ForEach(x => Video(x.VideoUrl));
             }
             return Ok(posts);
         }
