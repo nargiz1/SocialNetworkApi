@@ -35,13 +35,13 @@ namespace FinalProject.Controllers
                 Text = dto.Text,
                 Deadline = dto.Deadline
             };
-            if (dto.ImageFile != null && Extensions.IsImage(dto.ImageFile) && Extensions.IsvalidSize(dto.ImageFile, 500))
+            if (dto.ImageFile != null && Files.IsImage(dto.ImageFile) && Files.IsvalidSize(dto.ImageFile, 500))
             {
-                newAdv.ImageUrl = await Extensions.Upload(dto.ImageFile, "Images");
+                newAdv.ImageUrl = Files.Upload(dto.ImageFile, "Images");
             }
             if (dto.VideoFile != null)
             {
-                newAdv.VideoUrl = await Extensions.Upload(dto.VideoFile, "Videos");
+                newAdv.VideoUrl = Files.Upload(dto.VideoFile, "Videos");
             }
             await _db.Advertisements.AddAsync(newAdv);
             await _db.SaveChangesAsync();
@@ -63,19 +63,11 @@ namespace FinalProject.Controllers
             if (advToDelete == null) return NotFound("Advertisement not found!");
             if(advToDelete.ImageUrl != null)
             {
-                string filePath = Path.Combine(@"Resources", @"images", advToDelete.ImageUrl);
-                if (System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.Delete(filePath);
-                }
+                Files.Delete(@"Resources", @"Images", advToDelete.ImageUrl);
             }
             if (advToDelete.VideoUrl != null)
             {
-                string filePath = Path.Combine(@"Resources", @"videos", advToDelete.VideoUrl);
-                if (System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.Delete(filePath);
-                }
+                Files.Delete(@"Resources", @"Videos", advToDelete.ImageUrl);
             }
             _db.Advertisements.Remove(advToDelete);
             await _db.SaveChangesAsync();
@@ -89,13 +81,13 @@ namespace FinalProject.Controllers
             Advertisement advertisementToUpdate = await _db.Advertisements.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (advertisementToUpdate == null) return NotFound("Advertisement doesn't exist");
             advertisementToUpdate.Text = dto.Text;
-            if (dto.ImageFile != null && Extensions.IsImage(dto.ImageFile) && Extensions.IsvalidSize(dto.ImageFile, 500))
+            if (dto.ImageFile != null && Files.IsImage(dto.ImageFile) && Files.IsvalidSize(dto.ImageFile, 500))
             {
-                advertisementToUpdate.ImageUrl = await Extensions.Upload(dto.ImageFile, "Images");
+                advertisementToUpdate.ImageUrl = Files.Upload(dto.ImageFile, "Images");
             }
-            if (dto.VideoFile != null && Extensions.IsVideo(dto.ImageFile) && Extensions.IsvalidSize(dto.ImageFile, 1000))
+            if (dto.VideoFile != null && Files.IsVideo(dto.ImageFile) && Files.IsvalidSize(dto.ImageFile, 1000))
             {
-                advertisementToUpdate.VideoUrl = await Extensions.Upload(dto.VideoFile, "Videos");
+                advertisementToUpdate.VideoUrl = Files.Upload(dto.VideoFile, "Videos");
             }
             advertisementToUpdate.Deadline = dto.Deadline;
             _db.Advertisements.Update(advertisementToUpdate);
@@ -108,11 +100,8 @@ namespace FinalProject.Controllers
         {
             Advertisement adv = await _db.Advertisements.FirstOrDefaultAsync(x => x.Id == advId);
             if (adv == null) return NotFound("Advertisement not found!");
-            if(!(adv.ImageUrl.Contains(@"Resources\Images\") && adv.VideoUrl.Contains(@"Resources\Videos\")))
-            {
-                adv.ImageUrl = (@"Resources\Images\" + adv.ImageUrl);
-                adv.VideoUrl = (@"Resources\Videos\" + adv.VideoUrl);
-            }
+            Files.ImageUrl(adv.ImageUrl);
+            Files.VideoUrl(adv.VideoUrl);
             return Ok(adv);
         }
         [HttpGet("getAll")]
@@ -124,11 +113,8 @@ namespace FinalProject.Controllers
             List<Advertisement> ads = _db.Advertisements.Skip(currentSkip).Take(currentTake).OrderByDescending(x => x.Created).ToList();
             foreach (var item in ads)
             {
-                if (!(item.ImageUrl.Contains(@"Resources\Images\") && item.VideoUrl.Contains(@"Resources\Videos\")))
-                {
-                    item.ImageUrl = (@"Resources\Images\" + item.ImageUrl);
-                    item.VideoUrl = (@"Resources\Videos\" + item.VideoUrl);
-                }
+                Files.ImageUrl(item.ImageUrl);
+                Files.VideoUrl(item.VideoUrl);
             }
             return Ok();
         }

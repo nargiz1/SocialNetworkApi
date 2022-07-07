@@ -2,14 +2,11 @@
 using FinalProject.DTOs;
 using FinalProject.Models;
 using FinalProject.Utils;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace FinalProject.Controllers
@@ -51,9 +48,9 @@ namespace FinalProject.Controllers
                     await _db.SaveChangesAsync();
                 }
             }
-            if(dto.ImageFile != null && Extensions.IsImage(dto.ImageFile) && Extensions.IsvalidSize(dto.ImageFile, 500))
+            if(dto.ImageFile != null && Files.IsImage(dto.ImageFile) && Files.IsvalidSize(dto.ImageFile, 500))
             {
-                newGroupChat.ImageUrl = await Extensions.Upload(dto.ImageFile, "Images");
+                newGroupChat.ImageUrl = Files.Upload(dto.ImageFile, "Images");
                 _db.GroupChats.Update(newGroupChat);
                 await _db.SaveChangesAsync();
             }
@@ -66,11 +63,7 @@ namespace FinalProject.Controllers
             if (chatToDelete == null) return NotFound("Chat not found!");
             if (chatToDelete.ImageUrl != null)
             {
-                string filePath = Path.Combine(@"Resources", @"images", chatToDelete.ImageUrl);
-                if (System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.Delete(filePath);
-                }
+                Files.Delete(@"Resources", @"Images", chatToDelete.ImageUrl);
             }
             _db.GroupChats.Remove(chatToDelete);
             await _db.SaveChangesAsync();
@@ -91,10 +84,7 @@ namespace FinalProject.Controllers
                 .Include(x=> x.Messages)
                 .FirstOrDefaultAsync(x => x.Id == chatId);
             if (group == null) return NotFound("Group is not found");
-            if (!group.ImageUrl.Contains(@"Resources\Images\"))
-            {
-                group.ImageUrl = (@"Resources\Images\" + group.ImageUrl);
-            }
+            Files.ImageUrl(group.ImageUrl);
             return Ok(group);
         }
         //[HttpGet("getUserGroupChats")]

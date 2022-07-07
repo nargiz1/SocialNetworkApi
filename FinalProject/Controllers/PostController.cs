@@ -57,11 +57,11 @@ namespace FinalProject.Controllers
             {
                 foreach (IFormFile item in dto.ImageFiles)
                 {
-                    if (Extensions.IsImage(item) && Extensions.IsvalidSize(item, 500))
+                    if (Files.IsImage(item) && Files.IsvalidSize(item, 500))
                     {
                         PostImage newPostImage = new PostImage()
                         {
-                            ImageUrl = await Extensions.Upload(item, "Images"),
+                            ImageUrl = Files.Upload(item, "Images"),
                             PostId = newPost.Id,
                             Created = DateTime.Now
 
@@ -75,11 +75,11 @@ namespace FinalProject.Controllers
             {
                 foreach (IFormFile item in dto.VideoFiles)
                 {
-                    if (Extensions.IsVideo(item) && Extensions.IsvalidSize(item, 1000))
+                    if (Files.IsVideo(item) && Files.IsvalidSize(item, 1000))
                     {
                         PostVideo newPostVideo = new PostVideo()
                         {
-                            VideoUrl = await Extensions.Upload(item, "Videos"),
+                            VideoUrl = Files.Upload(item, "Videos"),
                             PostId = newPost.Id,
                             Created = DateTime.Now
 
@@ -112,22 +112,14 @@ namespace FinalProject.Controllers
             {
                 foreach (PostImage item in postToDelete.Images)
                 {
-                    string filePath = Path.Combine(@"Resources", @"images", item.ImageUrl);
-                    if (System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
+                    Files.Delete(@"Resources", @"Images", item.ImageUrl);
                 }
             }
             if (postToDelete.Videos != null)
             {
                 foreach (PostVideo item in postToDelete.Videos)
                 {
-                    string filePath = Path.Combine(@"Resources", @"videos", item.VideoUrl);
-                    if (System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
+                    Files.Delete(@"Resources", @"Videos", item.VideoUrl);
                 }
             }
             _db.Posts.Remove(postToDelete);
@@ -162,24 +154,15 @@ namespace FinalProject.Controllers
                 .ThenInclude(x => x.Likes)
                 .FirstOrDefaultAsync(x => x.Id == Id);
             if (post == null) return NotFound();
-            foreach(PostImage item in post.Images)
-            {
-                if (!item.ImageUrl.Contains(@"Resources\Images\"))
-                {
-                    item.ImageUrl = (@"Resources\Images\" + item.ImageUrl);
-                }
-            }
-            foreach (PostVideo item in post.Videos)
-            {
-                Video(item.VideoUrl);
-            }
+            post.Images.ForEach(x => x.ImageUrl=@"Resources\Images\" + x.ImageUrl);
+            post.Videos.ForEach(x => x.VideoUrl = @"Resources\Videos\" + x.VideoUrl);
             return Ok(post);
         }
         [HttpGet("getUserPosts")]
-        public async Task<IActionResult> GetUserPosts([FromQuery] string userId, PaginationDTO dto)
+        public async Task<IActionResult> GetUserPosts([FromBody] string userId)
         {
-            int currentSkip = dto.Skip ?? 1;
-            int currentTake = dto.Take ?? 5;
+            int currentSkip =  0;
+            int currentTake =  5;
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null) return NotFound();
             List<Post> posts = await _db.Posts
@@ -193,13 +176,13 @@ namespace FinalProject.Controllers
                 .Where(x => x.UserId == userId).OrderByDescending(x => x.Created).Skip(currentSkip).Take(currentTake).ToListAsync();
             foreach(var item in posts)
             {
-                item.Images.ForEach(x => Image(x.ImageUrl));
-                item.Videos.ForEach(x => Video(x.VideoUrl));
+                item.Images.ForEach(x => x.ImageUrl = @"Resources\Images\" + x.ImageUrl);
+                item.Videos.ForEach(x => x.VideoUrl = @"Resources\Videos\" + x.VideoUrl);
             }
             return Ok(posts);
         }
         [HttpGet("getAllPosts")]
-        public async Task<IActionResult> GetAllPosts([FromQuery] PaginationDTO dto)
+        public async Task<IActionResult> GetAllPosts([FromBody] PaginationDTO dto)
         {
             int currentSkip = dto.Skip ?? 1;
             int currentTake = dto.Take ?? 5;
@@ -213,28 +196,11 @@ namespace FinalProject.Controllers
                 .ThenInclude(x => x.Likes).Skip(currentSkip).Take(currentTake).OrderByDescending(x => x.Created).ToListAsync();
             foreach (var item in posts)
             {
-                item.Images.ForEach(x => Image(x.ImageUrl));
-                item.Videos.ForEach(x => Video(x.VideoUrl));
+                item.Images.ForEach(x => x.ImageUrl = @"Resources\Images\" + x.ImageUrl);
+                item.Videos.ForEach(x => x.VideoUrl = @"Resources\Videos\" + x.VideoUrl);
             }
             return Ok(posts);
         }
-        [HttpGet("image")]
-        public string Image(string url)
-        {
-            if (!url.Contains(@"Resources\Images\"))
-            {
-                url = @"Resources\Images\" + url;
-            }
-            return url;
-        }
-        [HttpGet("video")]
-        public string Video(string url)
-        {
-            if (!url.Contains(@"Resources\Videos\"))
-            {
-                url = @"Resources\Videos\" + url;
-            }
-            return url;
-        }
+        
     }
 }

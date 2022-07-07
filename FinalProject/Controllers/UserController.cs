@@ -18,11 +18,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using static Google.Apis.Auth.GoogleJsonWebSignature;
 
 namespace FinalProject.Controllers
 {
@@ -195,10 +192,7 @@ namespace FinalProject.Controllers
         {
             var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(userEmail);
-            if (!user.ImageUrl.Contains(@"Resources\Images\"))
-            {
-                user.ImageUrl = (@"Resources\Images\" + user.ImageUrl);
-            }
+            Files.ImageUrl(user.ImageUrl);
             return Ok(user);
         }
 
@@ -237,14 +231,10 @@ namespace FinalProject.Controllers
         {
             if (!ModelState.IsValid) return BadRequest();
             var user = await _userManager.FindByEmailAsync(this.User.FindFirstValue(ClaimTypes.Email));
-            if (dto.ImageFile != null && Extensions.IsImage(dto.ImageFile) && Extensions.IsvalidSize(dto.ImageFile, 500))
+            if (dto.ImageFile != null && Files.IsImage(dto.ImageFile) && Files.IsvalidSize(dto.ImageFile, 500))
             {
-                string filePath = Path.Combine(@"Resources", @"images", user.ImageUrl);
-                if (System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.Delete(filePath);
-                }
-                user.ImageUrl = await Extensions.Upload(dto.ImageFile, "Images");
+                Files.Delete(@"Resources", @"Images", user.ImageUrl);
+                user.ImageUrl = Files.Upload(dto.ImageFile, "Images");
             }
             await _userManager.UpdateAsync(user);
             return Ok("Profile picture updated!");
@@ -254,14 +244,10 @@ namespace FinalProject.Controllers
         {
             if (!ModelState.IsValid) return BadRequest();
             var user = await _userManager.FindByEmailAsync(this.User.FindFirstValue(ClaimTypes.Email));
-            if (dto.CoverPicFile != null && Extensions.IsImage(dto.CoverPicFile) && Extensions.IsvalidSize(dto.CoverPicFile, 500))
+            if (dto.CoverPicFile != null && Files.IsImage(dto.CoverPicFile) && Files.IsvalidSize(dto.CoverPicFile, 500))
             {
-                string filePath = Path.Combine(@"Resources", @"images", user.CoverPicUrl);
-                if (System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.Delete(filePath);
-                }
-                user.CoverPicUrl = await Extensions.Upload(dto.CoverPicFile, "Images");
+                Files.Delete(@"Resources", @"Images", user.CoverPicUrl);
+                user.CoverPicUrl = Files.Upload(dto.CoverPicFile, "Images");
             }
             await _userManager.UpdateAsync(user);
             return Ok("Cover picture updated!");

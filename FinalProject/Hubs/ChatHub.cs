@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FinalProject.DTOs;
+using FinalProject.Models;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 
@@ -34,7 +35,7 @@ namespace FinalProject.Hubs
             if (_connections.TryGetValue(Context.ConnectionId, out UserConnection userConnection))
             {
                 await Clients.Group(userConnection.Room)
-                    .SendAsync("ReceiveMessage", userConnection.User, message);
+                    .SendAsync("ReceiveMessage", message);
             }
         }
         public async Task JoinRoom(UserConnection userConnection)
