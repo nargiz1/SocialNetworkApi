@@ -77,7 +77,7 @@ namespace FinalProject.Controllers
             return Ok("Follower deleted!");
         }
         [HttpGet("getFollowers")]
-        public async Task<IActionResult> GetFollowers([FromBody] string userId)
+        public async Task<IActionResult> GetFollowers([FromQuery] string userId)
         {
             if (userId == null) return BadRequest("User not found");
             ApiUser user = await _userManager.FindByIdAsync(userId);
@@ -92,7 +92,7 @@ namespace FinalProject.Controllers
             return Ok(followers);
         }
         [HttpGet("getSubscribes")]
-        public async Task<IActionResult> GetSubscribes([FromBody] string userId)
+        public async Task<IActionResult> GetSubscribes([FromQuery] string userId)
         {
             if (userId == null) return BadRequest("User not found");
             ApiUser user = await _userManager.FindByIdAsync(userId);

@@ -204,7 +204,7 @@ namespace FinalProject.Controllers
 
         [Authorize]
         [HttpPost("update")]
-        public async Task<IActionResult> UpdateUser([FromForm] UpdateDTO dto)
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateDTO dto)
         {
             if (!ModelState.IsValid) return BadRequest();
             var user = await _userManager.FindByEmailAsync(this.User.FindFirstValue(ClaimTypes.Email));
@@ -342,7 +342,7 @@ namespace FinalProject.Controllers
             return Ok(users.Skip(currentSkip).Take(currentTake));
         }
         [HttpGet("seacrhUser")]
-        public IActionResult Search([FromBody]string query)
+        public IActionResult Search([FromQuery]string query)
         {
             if (query == null) return BadRequest("NotFound");
             List<ApiUser> users = _userManager.Users.ToList();

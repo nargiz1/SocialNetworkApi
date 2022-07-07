@@ -176,7 +176,7 @@ namespace FinalProject.Controllers
             return Ok(post);
         }
         [HttpGet("getUserPosts")]
-        public async Task<IActionResult> GetUserPosts([FromBody] string userId, [FromQuery] PaginationDTO dto)
+        public async Task<IActionResult> GetUserPosts([FromQuery] string userId, PaginationDTO dto)
         {
             int currentSkip = dto.Skip ?? 1;
             int currentTake = dto.Take ?? 5;
