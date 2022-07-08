@@ -8,6 +8,8 @@ namespace FinalProject.DTOs
 {
     public class MessageDTO
     {
+        [Required]
+        public string UserId { get; set; }
         [Required, MaxLength(3000)]
         public string Text { get; set; }
         public bool isRead { get; set; }

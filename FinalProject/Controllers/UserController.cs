@@ -160,7 +160,7 @@ namespace FinalProject.Controllers
         public IActionResult LogOut()
         {
             Response.Cookies.Delete("jwt");
-            return Ok("User logged out");
+            return Redirect("http://localhost:3000/login");
         }
 
         [Authorize]

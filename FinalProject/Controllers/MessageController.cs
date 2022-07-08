@@ -32,6 +32,7 @@ namespace FinalProject.Controllers
             if (dto.PrivateChatId == null && dto.GroupChatId == null) return BadRequest("Choose chat");
             var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(userEmail);
+            if (dto.UserId != user.Id) return BadRequest();
             Message newMessage = new Message()
             {
                 Text = dto.Text,
