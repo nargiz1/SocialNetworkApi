@@ -31,7 +31,8 @@ namespace FinalProject.Controllers
             if (post == null) return NotFound();
             var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(userEmail);
-
+            var duplicate = await _db.PostLikes.FirstOrDefaultAsync(x => x.PostId == post.Id && x.UserId == user.Id);
+            if (duplicate != null) return BadRequest("Post already liked");
             PostLike newLike = new PostLike()
             {
                 UserId = user.Id,
