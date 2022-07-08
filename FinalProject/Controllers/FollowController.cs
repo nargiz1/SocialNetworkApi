@@ -37,7 +37,7 @@ namespace FinalProject.Controllers
             var userToFollow = await _userManager.FindByIdAsync(followedUserId);
             if (userToFollow == null) return BadRequest("User not found!");
             if (userToFollow.Id == user.Id) return BadRequest("Cannot follow yourself!");
-            var duplicate = await _db.FollowModels.FirstOrDefaultAsync(x => x.FollowedUserId == userToFollow.Id);
+            var duplicate = await _db.FollowModels.FirstOrDefaultAsync(x => x.FollowedUserId == userToFollow.Id && x.FollowingUserId == user.Id);
             if (duplicate != null) return BadRequest("You are already following this user!");
             FollowModel newFollow = new FollowModel()
             {

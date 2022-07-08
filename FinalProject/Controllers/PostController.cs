@@ -154,7 +154,7 @@ namespace FinalProject.Controllers
                 .ThenInclude(x => x.Likes)
                 .FirstOrDefaultAsync(x => x.Id == Id);
             if (post == null) return NotFound();
-            post.Images.ForEach(x => x.ImageUrl=@"Resources\Images\" + x.ImageUrl);
+            post.Images.ForEach(x => ImageUrl(x.ImageUrl));
             post.Videos.ForEach(x => x.VideoUrl = @"Resources\Videos\" + x.VideoUrl);
             return Ok(post);
         }
@@ -201,6 +201,12 @@ namespace FinalProject.Controllers
             }
             return Ok(posts);
         }
-        
+        [HttpGet("test")]
+        public string ImageUrl(string url)
+        {
+            string newUrl = (@"Resources\Images\" + url);
+            return newUrl;
+        }
+
     }
 }
