@@ -101,7 +101,7 @@ namespace FinalProject.Controllers
             List<FollowModel> follows = await _db.FollowModels.Where(x => x.FollowingUserId == userId).ToListAsync();
             foreach (FollowModel item in follows)
             {
-                ApiUser follower = await _userManager.FindByIdAsync(item.FollowingUserId);
+                ApiUser follower = await _userManager.FindByIdAsync(item.FollowedUserId);
                 subscribes.Add(follower);
             }
             return Ok(subscribes);
