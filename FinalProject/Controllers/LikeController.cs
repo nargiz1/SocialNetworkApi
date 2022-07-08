@@ -84,9 +84,13 @@ namespace FinalProject.Controllers
             return Ok("post liked");
         }
         [HttpPost("removeCommentLike")]
-        public async Task<IActionResult> RemoveCommentLike([FromBody] int commentLikeId)
+        public async Task<IActionResult> RemoveCommentLike([FromBody] int commentId)
         {
-            CommentLike like = await _db.CommentLikes.FirstOrDefaultAsync(x => x.Id == commentLikeId);
+            Comment comment = await _db.PostComments.FirstOrDefaultAsync(x => x.Id == commentId);
+            if (comment == null) return NotFound();
+            var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
+            var user = await _userManager.FindByEmailAsync(userEmail);
+            CommentLike like = await _db.CommentLikes.FirstOrDefaultAsync(x => x.Id == comment.Id && x.UserId== user.Id);
             if (like == null) return NotFound();
             _db.CommentLikes.Remove(like);
             await _db.SaveChangesAsync();
