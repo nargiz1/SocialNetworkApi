@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FinalProject.Controllers
@@ -77,8 +79,9 @@ namespace FinalProject.Controllers
         //}
 
         [HttpGet("getGroupChat")]
-        public async Task<IActionResult> GetGroupChat([FromBody] int chatId)
+        public async Task<IActionResult> GetGroupChat([FromQuery] int? chatId)
         {
+            if (chatId == null) return Ok();
             GroupChat group = await _db.GroupChats
                 .Include(x=> x.Users)
                 .Include(x=> x.Messages)
@@ -87,17 +90,21 @@ namespace FinalProject.Controllers
             Files.ImageUrl(group.ImageUrl);
             return Ok(group);
         }
-        //[HttpGet("getUserGroupChats")]
-        //public async Task<IActionResult> GetAll([FromBody] string userId)
-        //{
-        //    if (userId == null) return BadRequest();
-        //    ApiUser user = await _userManager.FindByIdAsync(userId);
-        //    if (user == null) return NotFound("User not found!");
-        //    List<GroupChatToUser> groups = await _db.GroupChatToUser.Where(x => x.UserId == userId).ToListAsync();
-        //    List<GroupChat> groups = await _db.GroupChats
-        //        .Include(x => x.Users)
-        //        .Include(x => x.Messages).ToListAsync();
-        //    return Ok(groups);
-        //}
+        [HttpGet("getUserGroupChats")]
+        public async Task<IActionResult> GetAll([FromQuery] string userId)
+        {
+            if (userId == null) return BadRequest();
+            ApiUser user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound("User not found!");
+            List<GroupChatToUser> groupUsers = await _db.GroupChatToUser.Where(x => x.UserId == userId).ToListAsync();
+            List<GroupChat> groups = new List<GroupChat>();
+            foreach(var item in groupUsers)
+            {
+                var group = _db.GroupChats.FirstOrDefault(x => x.Id == item.GroupChatId);
+                group.ImageUrl = @"Resources\Images\" + group.ImageUrl;
+                groups.Add(group);
+            }
+            return Ok(groups);
+        }
     }
 }

@@ -192,7 +192,14 @@ namespace FinalProject.Controllers
         {
             var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(userEmail);
-            Files.ImageUrl(user.ImageUrl);
+            if(user.ImageUrl != null && !user.ImageUrl.Contains(@"Resources\Images\"))
+            {
+                user.ImageUrl = @"Resources\Images\" + user.ImageUrl;
+            }
+            if (user.CoverPicUrl != null && !user.CoverPicUrl.Contains(@"Resources\Images\"))
+            {
+                user.CoverPicUrl = @"Resources\Images\" + user.CoverPicUrl;
+            }
             return Ok(user);
         }
 
@@ -233,7 +240,7 @@ namespace FinalProject.Controllers
             var user = await _userManager.FindByEmailAsync(this.User.FindFirstValue(ClaimTypes.Email));
             if (dto.ImageFile != null && Files.IsImage(dto.ImageFile) && Files.IsvalidSize(dto.ImageFile, 500))
             {
-                Files.Delete(@"Resources", @"Images", user.ImageUrl);
+                if(user.ImageUrl != null) Files.Delete(@"Resources", @"Images", user.ImageUrl);
                 user.ImageUrl = Files.Upload(dto.ImageFile, "Images");
             }
             await _userManager.UpdateAsync(user);
@@ -246,7 +253,7 @@ namespace FinalProject.Controllers
             var user = await _userManager.FindByEmailAsync(this.User.FindFirstValue(ClaimTypes.Email));
             if (dto.CoverPicFile != null && Files.IsImage(dto.CoverPicFile) && Files.IsvalidSize(dto.CoverPicFile, 500))
             {
-                Files.Delete(@"Resources", @"Images", user.CoverPicUrl);
+                if (user.CoverPicUrl != null) Files.Delete(@"Resources", @"Images", user.CoverPicUrl);
                 user.CoverPicUrl = Files.Upload(dto.CoverPicFile, "Images");
             }
             await _userManager.UpdateAsync(user);

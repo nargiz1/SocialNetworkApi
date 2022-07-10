@@ -54,18 +54,44 @@ namespace FinalProject.Controllers
             await _db.SaveChangesAsync();
             return Ok("Message deleted!");
         }
-        [HttpGet("getMessages")]
+        [HttpGet("getChatMessages")]
         public async Task<IActionResult> GetChatMessages([FromQuery] int? chatId)
         {
             if (chatId == null) return Ok();
             var privateChat = await _db.PrivateChats.FirstOrDefaultAsync(x => x.Id == chatId);
-            var groupChat = await _db.GroupChats.FirstOrDefaultAsync(x => x.Id == chatId);
-            if (privateChat == null && groupChat == null) return NotFound();
+            if (privateChat == null) return NotFound();
             List<Message> messages = await _db.Messages
                 .Include(x=> x.User)
-                .Where(x => x.PrivateChatId == chatId || x.GroupChatId == chatId)
+                .Where(x => x.PrivateChatId == privateChat.Id)
                 .OrderBy(x => x.Created)
                 .ToListAsync();
+            foreach(var item in messages)
+            {
+                if (!item.User.ImageUrl.Contains(@"Resources\Images\"))
+                {
+                    item.User.ImageUrl = @"Resources\Images\" + item.User.ImageUrl;
+                }
+            }
+            return Ok(messages);
+        }
+        [HttpGet("getGroupMessages")]
+        public async Task<IActionResult> GetGroupMessages([FromQuery] int? chatId)
+        {
+            if (chatId == null) return Ok();
+            var groupChat = await _db.GroupChats.FirstOrDefaultAsync(x => x.Id == chatId);
+            if (groupChat == null) return NotFound();
+            List<Message> messages = await _db.Messages
+                .Include(x => x.User)
+                .Where(x => x.GroupChatId == groupChat.Id)
+                .OrderBy(x => x.Created)
+                .ToListAsync();
+            foreach (var item in messages)
+            {
+                if (!item.User.ImageUrl.Contains(@"Resources\Images\"))
+                {
+                    item.User.ImageUrl = @"Resources\Images\" + item.User.ImageUrl;
+                }
+            }
             return Ok(messages);
         }
     }

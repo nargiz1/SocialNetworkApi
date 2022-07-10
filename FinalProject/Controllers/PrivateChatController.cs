@@ -41,13 +41,21 @@ namespace FinalProject.Controllers
             return Ok("Chat created!");
         }
         [HttpPost("delete")]
-        public async Task<IActionResult> DeleteChat([FromBody] int chatId)
+        public async Task<IActionResult> DeleteChat([FromBody] int? chatId)
         {
+            if (chatId == null) return NotFound();
             PrivateChat chatToDelete = await _db.PrivateChats.FirstOrDefaultAsync(x => x.Id == chatId);
             if (chatToDelete == null) return NotFound("Chat not found!");
+            var messages = _db.Messages.Where(x => x.PrivateChatId == chatToDelete.Id);
+            foreach(var item in messages)
+            {
+                _db.Messages.Remove(item);
+
+            }
+            _db.SaveChanges();
             _db.PrivateChats.Remove(chatToDelete);
             await _db.SaveChangesAsync();
-            return Ok("Chat deleted!");
+            return Ok("Deleted!");
         }
         [HttpGet("getChat")]
         public async Task<IActionResult> GetChat([FromQuery] int? chatId)
