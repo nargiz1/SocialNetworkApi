@@ -262,6 +262,7 @@ namespace FinalProject.Controllers
         [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword([FromBody] string email)
         {
+            if (email == null) return BadRequest("Email cannot be empty!");
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
@@ -270,7 +271,7 @@ namespace FinalProject.Controllers
             var EmailToken = await _userManager.GeneratePasswordResetTokenAsync(user);
             var link = Url.Action(nameof(ResetToken), "User", new { email = user.Email, EmailToken }, Request.Scheme);
             SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
-            client.Credentials = new NetworkCredential("socialnetworkproj1@gmail.com", "ftdmmjgojxqtyapp");
+            client.Credentials = new NetworkCredential("nargizramazanova28@gmail.com", "aqdyaludxpokjvjm");
             client.EnableSsl = true;
 
             var message = await Extensions.SendMail("socialnetworkproj1@gmail.com", user.Email, link, "Reset Password", "Reset Password");
@@ -290,7 +291,7 @@ namespace FinalProject.Controllers
                 Email = user.Email,
                 Token = emailToken,
             };
-            return RedirectToPage("http://localhost:3000/reset", dto);
+            return Redirect("http://localhost:3000/reset/"+dto.Email+"/"+dto.Token);
         }
 
         [HttpPost("ResetPassword")]

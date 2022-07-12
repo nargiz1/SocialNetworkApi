@@ -113,6 +113,7 @@ namespace FinalProject.Controllers
             List<Advertisement> ads = _db.Advertisements.Skip(currentSkip).Take(currentTake).OrderByDescending(x => x.Created).ToList();
             foreach (var item in ads)
             {
+                if(item.ImageUrl != null )
                 item.ImageUrl = @"Resources\Images\" + item.ImageUrl;
                 item.VideoUrl = @"Resources\Videos\" + item.VideoUrl;
             }
