@@ -192,10 +192,7 @@ namespace FinalProject.Controllers
         {
             var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(userEmail);
-            if(user.ImageUrl != null && !user.ImageUrl.Contains(@"Resources\Images\"))
-            {
-                user.ImageUrl = @"Resources\Images\" + user.ImageUrl;
-            }
+            user.ImageUrl = @"Resources\Images\" + user.ImageUrl;
             if (user.CoverPicUrl != null && !user.CoverPicUrl.Contains(@"Resources\Images\"))
             {
                 user.CoverPicUrl = @"Resources\Images\" + user.CoverPicUrl;
@@ -269,7 +266,7 @@ namespace FinalProject.Controllers
                 return BadRequest("user not found");
             }
             var EmailToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var link = Url.Action(nameof(ResetToken), "User", new { email = user.Email, EmailToken }, Request.Scheme);
+            var link = "http://localhost:3000/reset?token=" + EmailToken+"&email="+user.Email;
             SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
             client.Credentials = new NetworkCredential("nargizramazanova28@gmail.com", "aqdyaludxpokjvjm");
             client.EnableSsl = true;
@@ -281,22 +278,10 @@ namespace FinalProject.Controllers
 
             return Ok(EmailToken);
         }
-        [HttpGet("ResetToken")]
-        public async Task<IActionResult> ResetToken(string email, string emailToken)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-
-            ResetPasswordDTO dto = new ResetPasswordDTO()
-            {
-                Email = user.Email,
-                Token = emailToken,
-            };
-            return Redirect("http://localhost:3000/reset/"+dto.Email+"/"+dto.Token);
-        }
-
         [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPassword(ResetPasswordDTO dto)
         {
+            
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
             {
