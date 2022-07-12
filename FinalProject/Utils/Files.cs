@@ -43,18 +43,5 @@ namespace FinalProject.Utils
                 System.IO.File.Delete(filePath);
             }
         }
-        public static string ImageUrl(string url)
-        {
-            string newUrl = (@"Resources\Images\" + url);
-            return newUrl;
-        }
-        public static string VideoUrl(string url)
-        {
-            if (!url.Contains(@"Resources\Videos\"))
-            {
-                url = @"Resources\Videos\" + url;
-            }
-            return url;
-        }
     }
 }

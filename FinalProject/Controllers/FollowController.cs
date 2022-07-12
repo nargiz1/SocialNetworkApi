@@ -87,6 +87,10 @@ namespace FinalProject.Controllers
             foreach (FollowModel item in follows)
             {
                 ApiUser follower = await _userManager.FindByIdAsync(item.FollowingUserId);
+                if (!follower.ImageUrl.Contains(@"Resources\Images\"))
+                {
+                    follower.ImageUrl = @"Resources\Images\" + follower.ImageUrl;
+                }
                 followers.Add(follower);
             }
             return Ok(followers);
@@ -102,6 +106,10 @@ namespace FinalProject.Controllers
             foreach (FollowModel item in follows)
             {
                 ApiUser follower = await _userManager.FindByIdAsync(item.FollowedUserId);
+                if (!follower.ImageUrl.Contains(@"Resources\Images\"))
+                {
+                    follower.ImageUrl = @"Resources\Images\" + follower.ImageUrl;
+                }
                 subscribes.Add(follower);
             }
             return Ok(subscribes);

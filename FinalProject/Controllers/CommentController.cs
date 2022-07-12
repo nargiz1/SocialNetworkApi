@@ -94,14 +94,31 @@ namespace FinalProject.Controllers
         {
             Post post = await _db.Posts.FirstOrDefaultAsync(x => x.Id == postId);
             if (post == null) return NotFound();
-            List<Comment> comments = await _db.PostComments.Include(x => x.Comments).Where(x=> x.PostId == postId).OrderByDescending(x=> x.Created).ToListAsync();
+            List<Comment> comments = await _db.PostComments
+                .Include(x=> x.User)
+                .Include(x => x.Comments)
+                .Where(x=> x.PostId == postId)
+                .OrderByDescending(x=> x.Created).ToListAsync();
+            foreach(var item in comments)
+            {
+                if (item.User.ImageUrl.Contains(@"Resources\Images\"))
+                {
+                    item.User.ImageUrl = @"Resources\Images\" + item.User.ImageUrl;
+                }
+            }
             return Ok(comments);
         }
         [HttpGet("getComment")]
         public async Task<IActionResult> GetComment([FromBody] int commentId)
         {
-            Comment comment = await _db.PostComments.FirstOrDefaultAsync(x => x.Id == commentId);
+            Comment comment = await _db.PostComments
+                .Include(x=> x.User)
+                .FirstOrDefaultAsync(x => x.Id == commentId);
             if (comment == null) return NotFound();
+            if (comment.User.ImageUrl.Contains(@"Resources\Images\"))
+            {
+                comment.User.ImageUrl = @"Resources\Images\" + comment.User.ImageUrl;
+            }
             return Ok(comment);
         }
     }

@@ -154,12 +154,12 @@ namespace FinalProject.Controllers
                 .ThenInclude(x => x.Likes)
                 .FirstOrDefaultAsync(x => x.Id == Id);
             if (post == null) return NotFound();
-            post.Images.ForEach(x => ImageUrl(x.ImageUrl));
+            post.Images.ForEach(x => x.ImageUrl = @"Resources\Images" + x.ImageUrl);
             post.Videos.ForEach(x => x.VideoUrl = @"Resources\Videos\" + x.VideoUrl);
             return Ok(post);
         }
         [HttpGet("getUserPosts")]
-        public async Task<IActionResult> GetUserPosts([FromBody] string userId)
+        public async Task<IActionResult> GetUserPosts([FromQuery] string userId)
         {
             int currentSkip =  0;
             int currentTake =  5;
@@ -182,7 +182,7 @@ namespace FinalProject.Controllers
             return Ok(posts);
         }
         [HttpGet("getAllPosts")]
-        public async Task<IActionResult> GetAllPosts([FromBody] PaginationDTO dto)
+        public async Task<IActionResult> GetAllPosts([FromQuery] PaginationDTO dto)
         {
             int currentSkip = dto.Skip ?? 1;
             int currentTake = dto.Take ?? 5;
@@ -200,12 +200,6 @@ namespace FinalProject.Controllers
                 item.Videos.ForEach(x => x.VideoUrl = @"Resources\Videos\" + x.VideoUrl);
             }
             return Ok(posts);
-        }
-        [HttpGet("test")]
-        public string ImageUrl(string url)
-        {
-            string newUrl = (@"Resources\Images\" + url);
-            return newUrl;
         }
 
     }

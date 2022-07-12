@@ -39,6 +39,7 @@ namespace FinalProject.Controllers
                 Created = DateTime.Now,
                 UserId = user.Id,
                 PrivateChatId = dto.PrivateChatId,
+                GroupChatId = dto.GroupChatId,
                 isRead = dto.isRead
             };
             await _db.Messages.AddAsync(newMessage);

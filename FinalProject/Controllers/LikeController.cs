@@ -63,6 +63,13 @@ namespace FinalProject.Controllers
             Post post = await _db.Posts.FirstOrDefaultAsync(x => x.Id == postId);
             if (post == null) return NotFound();
             List<PostLike> likes = await _db.PostLikes.Include(x => x.User).Where(x => x.PostId == postId).ToListAsync();
+            foreach(PostLike item in likes)
+            {
+                if (item.User.ImageUrl.Contains(@"Resources\Images"))
+                {
+                    item.User.ImageUrl = @"Resources\Images" + item.User.ImageUrl;
+                }
+            }
             return Ok(likes);
         }
         [HttpPost("likeComment")]
@@ -101,7 +108,14 @@ namespace FinalProject.Controllers
         {
             Comment comment = await _db.PostComments.FirstOrDefaultAsync(x => x.Id == commentId);
             if (comment == null) return NotFound();
-            List<Comment> likes = await _db.PostComments.Include(x => x.User).Where(x => x.CommentId == commentId).ToListAsync();
+            List<CommentLike> likes = await _db.CommentLikes.Include(x => x.User).Where(x => x.CommentId == commentId).ToListAsync();
+            foreach (CommentLike item in likes)
+            {
+                if (item.User.ImageUrl.Contains(@"Resources\Images"))
+                {
+                    item.User.ImageUrl = @"Resources\Images" + item.User.ImageUrl;
+                }
+            }
             return Ok(likes);
         }
     }

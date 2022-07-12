@@ -71,12 +71,53 @@ namespace FinalProject.Controllers
             await _db.SaveChangesAsync();
             return Ok("Group deleted!");
         }
-        //[HttpPost("update")]
-        //public async Task<IActionResult> Update([FromForm] GroupChatDTO dto, int id)
-        //{
-        //    if (dto == null) return BadRequest();
+        [HttpPost("update")]
+        public async Task<IActionResult> Update([FromForm] UpdateGroupChatDTO dto)
+        {
+            if (dto == null) return BadRequest();
+            GroupChat groupChatToUpdate = await _db.GroupChats.FirstOrDefaultAsync(x => x.Id == dto.Id);
+            if (groupChatToUpdate == null) NotFound("GroupNotFound");
+            groupChatToUpdate.Name = dto.Name;
+            groupChatToUpdate.ImageUrl = Files.Upload(dto.ImageFile, "Images");
+            _db.GroupChats.Update(groupChatToUpdate);
+            await _db.SaveChangesAsync();
+            return Ok("Group updated!");
+        }
 
-        //}
+        [HttpPost("addMember")]
+        public async Task<IActionResult> AddMember([FromBody] string userId, int groupId)
+        {
+            if (userId == null) return BadRequest();
+            GroupChat group = await _db.GroupChats.FirstOrDefaultAsync(x => x.Id == groupId);
+            if (group == null) return NotFound("Chat was not found!");
+            ApiUser userToAdd = await _userManager.FindByIdAsync(userId);
+            if (userToAdd == null) return NotFound("User was not found!");
+            var duplicate = await _db.GroupChatToUser.FirstOrDefaultAsync(x => x.GroupChatId == group.Id && x.UserId == userToAdd.Id);
+            if (duplicate != null) return BadRequest("User is already a member of the group!");
+            GroupChatToUser newGroupMember = new GroupChatToUser()
+            {
+                GroupChatId = group.Id,
+                UserId = userToAdd.Id
+            };
+            await _db.GroupChatToUser.AddAsync(newGroupMember);
+            await _db.SaveChangesAsync();
+            return Ok("User was added to the group!");
+        }
+
+        [HttpPost("deleteMember")]
+        public async Task<IActionResult> DeleteMember([FromBody] string userId, int groupId)
+        {
+            if (userId == null) return BadRequest();
+            GroupChat group = await _db.GroupChats.FirstOrDefaultAsync(x => x.Id == groupId);
+            if (group == null) return NotFound("Chat was not found!");
+            ApiUser userToAdd = await _userManager.FindByIdAsync(userId);
+            if (userToAdd == null) return NotFound("User was not found!");
+            var groupMember = await _db.GroupChatToUser.FirstOrDefaultAsync(x => x.GroupChatId == group.Id && x.UserId == userToAdd.Id);
+            if (groupMember == null) return BadRequest("User is not a member of the group!");
+            _db.GroupChatToUser.Remove(groupMember);
+            await _db.SaveChangesAsync();
+            return Ok("User was removed");
+        }
 
         [HttpGet("getGroupChat")]
         public async Task<IActionResult> GetGroupChat([FromQuery] int? chatId)
@@ -87,7 +128,10 @@ namespace FinalProject.Controllers
                 .Include(x=> x.Messages)
                 .FirstOrDefaultAsync(x => x.Id == chatId);
             if (group == null) return NotFound("Group is not found");
-            Files.ImageUrl(group.ImageUrl);
+            if (!group.ImageUrl.Contains(@"Resources\Images\"))
+            {
+                group.ImageUrl = @"Resources\Images\" + group.ImageUrl;
+            }
             return Ok(group);
         }
         [HttpGet("getUserGroupChats")]
@@ -101,7 +145,10 @@ namespace FinalProject.Controllers
             foreach(var item in groupUsers)
             {
                 var group = _db.GroupChats.FirstOrDefault(x => x.Id == item.GroupChatId);
-                group.ImageUrl = @"Resources\Images\" + group.ImageUrl;
+                if (!group.ImageUrl.Contains(@"Resources\Images\"))
+                {
+                    group.ImageUrl = @"Resources\Images\" + group.ImageUrl;
+                }
                 groups.Add(group);
             }
             return Ok(groups);
