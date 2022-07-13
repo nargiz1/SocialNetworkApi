@@ -268,7 +268,7 @@ namespace FinalProject.Controllers
             var EmailToken = await _userManager.GeneratePasswordResetTokenAsync(user);
             var link = "http://localhost:3000/reset?token=" + EmailToken+"&email="+user.Email;
             SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
-            client.Credentials = new NetworkCredential("nargizramazanova28@gmail.com", "aqdyaludxpokjvjm");
+            client.Credentials = new NetworkCredential("nargizramazanova28@gmail.com", "");
             client.EnableSsl = true;
 
             var message = await Extensions.SendMail("socialnetworkproj1@gmail.com", user.Email, link, "Reset Password", "Reset Password");
