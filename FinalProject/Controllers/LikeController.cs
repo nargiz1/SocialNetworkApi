@@ -65,7 +65,7 @@ namespace FinalProject.Controllers
             List<PostLike> likes = await _db.PostLikes.Include(x => x.User).Where(x => x.PostId == postId).ToListAsync();
             foreach(PostLike item in likes)
             {
-                if (item.User.ImageUrl.Contains(@"Resources\Images"))
+                if (!item.User.ImageUrl.Contains(@"Resources\Images\"))
                 {
                     item.User.ImageUrl = @"Resources\Images" + item.User.ImageUrl;
                 }
@@ -111,7 +111,7 @@ namespace FinalProject.Controllers
             List<CommentLike> likes = await _db.CommentLikes.Include(x => x.User).Where(x => x.CommentId == commentId).ToListAsync();
             foreach (CommentLike item in likes)
             {
-                if (item.User.ImageUrl.Contains(@"Resources\Images"))
+                if (!item.User.ImageUrl.Contains(@"Resources\Images\"))
                 {
                     item.User.ImageUrl = @"Resources\Images" + item.User.ImageUrl;
                 }

@@ -101,7 +101,7 @@ namespace FinalProject.Controllers
                 .OrderByDescending(x=> x.Created).ToListAsync();
             foreach(var item in comments)
             {
-                if (item.User.ImageUrl.Contains(@"Resources\Images\"))
+                if (!item.User.ImageUrl.Contains(@"Resources\Images\"))
                 {
                     item.User.ImageUrl = @"Resources\Images\" + item.User.ImageUrl;
                 }
@@ -115,7 +115,7 @@ namespace FinalProject.Controllers
                 .Include(x=> x.User)
                 .FirstOrDefaultAsync(x => x.Id == commentId);
             if (comment == null) return NotFound();
-            if (comment.User.ImageUrl.Contains(@"Resources\Images\"))
+            if (!comment.User.ImageUrl.Contains(@"Resources\Images\"))
             {
                 comment.User.ImageUrl = @"Resources\Images\" + comment.User.ImageUrl;
             }

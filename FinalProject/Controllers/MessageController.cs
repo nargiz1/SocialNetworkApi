@@ -15,6 +15,7 @@ namespace FinalProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MessageController : ControllerBase
     {
         private readonly ApiDbContext _db;

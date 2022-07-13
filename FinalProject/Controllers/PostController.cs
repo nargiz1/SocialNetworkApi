@@ -75,7 +75,7 @@ namespace FinalProject.Controllers
             {
                 foreach (IFormFile item in dto.VideoFiles)
                 {
-                    if (Files.IsVideo(item) && Files.IsvalidSize(item, 1000))
+                    if (Files.IsVideo(item) && Files.IsvalidSize(item, 6000))
                     {
                         PostVideo newPostVideo = new PostVideo()
                         {
@@ -154,7 +154,7 @@ namespace FinalProject.Controllers
                 .ThenInclude(x => x.Likes)
                 .FirstOrDefaultAsync(x => x.Id == Id);
             if (post == null) return NotFound();
-            post.Images.ForEach(x => x.ImageUrl = @"Resources\Images" + x.ImageUrl);
+            post.Images.ForEach(x => x.ImageUrl = @"Resources\Images\" + x.ImageUrl);
             post.Videos.ForEach(x => x.VideoUrl = @"Resources\Videos\" + x.VideoUrl);
             return Ok(post);
         }
@@ -182,10 +182,10 @@ namespace FinalProject.Controllers
             return Ok(posts);
         }
         [HttpGet("getAllPosts")]
-        public async Task<IActionResult> GetAllPosts([FromQuery] PaginationDTO dto)
+        public async Task<IActionResult> GetAllPosts()
         {
-            int currentSkip = dto.Skip ?? 1;
-            int currentTake = dto.Take ?? 5;
+            int currentSkip =  0;
+            int currentTake =  5;
             List<Post> posts = await _db.Posts
                 .Include(x => x.User)
                 .Include(x => x.Images)

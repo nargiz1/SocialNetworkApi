@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace FinalProject.Controllers
@@ -77,20 +78,30 @@ namespace FinalProject.Controllers
             if (dto == null) return BadRequest();
             GroupChat groupChatToUpdate = await _db.GroupChats.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (groupChatToUpdate == null) NotFound("GroupNotFound");
-            groupChatToUpdate.Name = dto.Name;
             groupChatToUpdate.ImageUrl = Files.Upload(dto.ImageFile, "Images");
+            _db.GroupChats.Update(groupChatToUpdate);
+            await _db.SaveChangesAsync();
+            return Ok("Group updated!");
+        }
+        [HttpPost("changeName")]
+        public async Task<IActionResult> ChangeName([FromBody] UpdateGroupNameDTO dto)
+        {
+            if (dto == null) return BadRequest();
+            GroupChat groupChatToUpdate = await _db.GroupChats.FirstOrDefaultAsync(x => x.Id == dto.Id);
+            if (groupChatToUpdate == null) NotFound("GroupNotFound");
+            groupChatToUpdate.Name = dto.Name;
             _db.GroupChats.Update(groupChatToUpdate);
             await _db.SaveChangesAsync();
             return Ok("Group updated!");
         }
 
         [HttpPost("addMember")]
-        public async Task<IActionResult> AddMember([FromBody] string userId, int groupId)
+        public async Task<IActionResult> AddMember([FromBody] GroupMemberDTO dto)
         {
-            if (userId == null) return BadRequest();
-            GroupChat group = await _db.GroupChats.FirstOrDefaultAsync(x => x.Id == groupId);
+            if (dto == null) return BadRequest();
+            GroupChat group = await _db.GroupChats.FirstOrDefaultAsync(x => x.Id == dto.GroupId);
             if (group == null) return NotFound("Chat was not found!");
-            ApiUser userToAdd = await _userManager.FindByIdAsync(userId);
+            ApiUser userToAdd = await _userManager.FindByIdAsync(dto.UserId);
             if (userToAdd == null) return NotFound("User was not found!");
             var duplicate = await _db.GroupChatToUser.FirstOrDefaultAsync(x => x.GroupChatId == group.Id && x.UserId == userToAdd.Id);
             if (duplicate != null) return BadRequest("User is already a member of the group!");
@@ -105,12 +116,12 @@ namespace FinalProject.Controllers
         }
 
         [HttpPost("deleteMember")]
-        public async Task<IActionResult> DeleteMember([FromBody] string userId, int groupId)
+        public async Task<IActionResult> DeleteMember([FromBody] GroupMemberDTO dto)
         {
-            if (userId == null) return BadRequest();
-            GroupChat group = await _db.GroupChats.FirstOrDefaultAsync(x => x.Id == groupId);
+            if (dto == null) return BadRequest();
+            GroupChat group = await _db.GroupChats.FirstOrDefaultAsync(x => x.Id == dto.GroupId);
             if (group == null) return NotFound("Chat was not found!");
-            ApiUser userToAdd = await _userManager.FindByIdAsync(userId);
+            ApiUser userToAdd = await _userManager.FindByIdAsync(dto.UserId);
             if (userToAdd == null) return NotFound("User was not found!");
             var groupMember = await _db.GroupChatToUser.FirstOrDefaultAsync(x => x.GroupChatId == group.Id && x.UserId == userToAdd.Id);
             if (groupMember == null) return BadRequest("User is not a member of the group!");
@@ -133,6 +144,29 @@ namespace FinalProject.Controllers
                 group.ImageUrl = @"Resources\Images\" + group.ImageUrl;
             }
             return Ok(group);
+        }
+        [HttpGet("getGroupMembers")]
+        public async Task<IActionResult> GetGroupMembers([FromQuery] int? groupId)
+        {
+            if (groupId == null) return Ok();
+            var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
+            var user = await _userManager.FindByEmailAsync(userEmail);
+            GroupChat group = await _db.GroupChats
+                .Include(x=> x.Users)
+                .ThenInclude(X=> X.User)
+                .FirstOrDefaultAsync(x => x.Id == groupId);
+            if (group == null) return NotFound("Group is not found");
+            List<GroupChatToUser> members = await _db.GroupChatToUser.Where(x => x.GroupChatId == group.Id && x.UserId!= user.Id).ToListAsync();
+            List<ApiUser> groupMembers = new List<ApiUser>();
+            foreach(var item in members)
+            {
+                if(item.User.ImageUrl!= null && !item.User.ImageUrl.Contains(@"Resources\Images\"))
+                {
+                    item.User.ImageUrl = @"Resources\Images\" + item.User.ImageUrl;
+                }
+                groupMembers.Add(item.User);
+            }
+            return Ok(groupMembers);
         }
         [HttpGet("getUserGroupChats")]
         public async Task<IActionResult> GetAll([FromQuery] string userId)

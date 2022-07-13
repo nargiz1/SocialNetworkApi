@@ -195,7 +195,20 @@ namespace FinalProject.Controllers
             user.ImageUrl = @"Resources\Images\" + user.ImageUrl;
             if (user.CoverPicUrl != null && !user.CoverPicUrl.Contains(@"Resources\Images\"))
             {
-                user.CoverPicUrl = @"Resources\Images\" + user.CoverPicUrl;
+                user.CoverPicUrl = @"Resources\\Images\\" + user.CoverPicUrl;
+            }
+            return Ok(user);
+        }
+        [Authorize]
+        [HttpGet("userById")]
+        public async Task<IActionResult> GetUserById([FromQuery] string userId)
+        {
+            if (userId == null) return BadRequest("Id is null");
+            var user = await _userManager.FindByIdAsync(userId);
+            user.ImageUrl = @"Resources\Images\" + user.ImageUrl;
+            if (user.CoverPicUrl != null && !user.CoverPicUrl.Contains(@"Resources\Images\"))
+            {
+                user.CoverPicUrl = @"Resources\\Images\\" + user.CoverPicUrl;
             }
             return Ok(user);
         }
@@ -281,7 +294,6 @@ namespace FinalProject.Controllers
         [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPassword(ResetPasswordDTO dto)
         {
-            
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
             {
