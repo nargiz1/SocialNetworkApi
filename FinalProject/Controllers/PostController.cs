@@ -178,6 +178,7 @@ namespace FinalProject.Controllers
             {
                 item.Images.ForEach(x => x.ImageUrl = @"Resources\Images\" + x.ImageUrl);
                 item.Videos.ForEach(x => x.VideoUrl = @"Resources\Videos\" + x.VideoUrl);
+                item.User.ImageUrl = @"Resources\Images\" + item.User.ImageUrl;
             }
             return Ok(posts);
         }
@@ -198,6 +199,7 @@ namespace FinalProject.Controllers
             {
                 item.Images.ForEach(x => x.ImageUrl = @"Resources\Images\" + x.ImageUrl);
                 item.Videos.ForEach(x => x.VideoUrl = @"Resources\Videos\" + x.VideoUrl);
+                item.User.ImageUrl = @"Resources\Images\" + item.User.ImageUrl;
             }
             return Ok(posts);
         }

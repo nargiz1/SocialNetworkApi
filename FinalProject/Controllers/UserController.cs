@@ -208,7 +208,7 @@ namespace FinalProject.Controllers
             user.ImageUrl = @"Resources\Images\" + user.ImageUrl;
             if (user.CoverPicUrl != null && !user.CoverPicUrl.Contains(@"Resources\Images\"))
             {
-                user.CoverPicUrl = @"Resources\\Images\\" + user.CoverPicUrl;
+                user.CoverPicUrl = @"Resources\Images\" + user.CoverPicUrl;
             }
             return Ok(user);
         }
