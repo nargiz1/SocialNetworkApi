@@ -37,20 +37,15 @@ namespace FinalProject.Controllers
             };
             await _db.GroupChats.AddAsync(newGroupChat);
             await _db.SaveChangesAsync();
-            foreach(string item in dto.UserIds)
+            var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
+            var user = await _userManager.FindByEmailAsync(userEmail);
+            GroupChatToUser groupChatToUser = new GroupChatToUser()
             {
-                ApiUser chatUser = await _userManager.FindByIdAsync(item);
-                if(chatUser != null)
-                {
-                    GroupChatToUser groupChatToUser = new GroupChatToUser()
-                    {
-                        UserId = chatUser.Id,
-                        GroupChatId =newGroupChat.Id
-                    };
-                    await _db.GroupChatToUser.AddAsync(groupChatToUser);
-                    await _db.SaveChangesAsync();
-                }
-            }
+                UserId = user.Id,
+                GroupChatId = newGroupChat.Id
+            };
+            await _db.GroupChatToUser.AddAsync(groupChatToUser);
+            await _db.SaveChangesAsync();
             if(dto.ImageFile != null && Files.IsImage(dto.ImageFile) && Files.IsvalidSize(dto.ImageFile, 500))
             {
                 newGroupChat.ImageUrl = Files.Upload(dto.ImageFile, "Images");
@@ -67,6 +62,11 @@ namespace FinalProject.Controllers
             if (chatToDelete.ImageUrl != null)
             {
                 Files.Delete(@"Resources", @"Images", chatToDelete.ImageUrl);
+            }
+            var messages = _db.Messages.Where(x => x.GroupChatId == chatToDelete.Id);
+            foreach (var item in messages)
+            {
+                _db.Messages.Remove(item);
             }
             _db.GroupChats.Remove(chatToDelete);
             await _db.SaveChangesAsync();

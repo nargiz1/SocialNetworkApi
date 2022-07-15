@@ -33,7 +33,8 @@ namespace FinalProject.Controllers
             Advertisement newAdv = new Advertisement()
             {
                 Text = dto.Text,
-                Deadline = dto.Deadline
+                Deadline = dto.Deadline,
+                IsExpired = false
             };
             if (dto.ImageFile != null && Files.IsImage(dto.ImageFile) && Files.IsvalidSize(dto.ImageFile, 500))
             {
@@ -53,7 +54,9 @@ namespace FinalProject.Controllers
             Advertisement adv = await _db.Advertisements.FirstOrDefaultAsync(x => x.Id == advId);
             if (adv == null) return NotFound("Advertisement not found!");
             await Task.Delay((int)(adv.Deadline).Subtract(DateTime.Now).TotalMilliseconds);
-            await Delete(advId);
+            adv.IsExpired = true;
+            _db.Advertisements.Update(adv);
+            await _db.SaveChangesAsync();
             return Ok();
         }
         [HttpPost("delete")]
@@ -75,7 +78,7 @@ namespace FinalProject.Controllers
         }
 
         [HttpPost("update")]
-        public async Task<IActionResult> Update([FromForm] AdvertisementDTO dto)
+        public async Task<IActionResult> Update([FromForm] AdvertisementToUpdateDTO dto)
         {
             if (dto == null) return BadRequest("Is null");
             Advertisement advertisementToUpdate = await _db.Advertisements.FirstOrDefaultAsync(x => x.Id == dto.Id);
@@ -117,7 +120,7 @@ namespace FinalProject.Controllers
                 item.ImageUrl = @"Resources\Images\" + item.ImageUrl;
                 item.VideoUrl = @"Resources\Videos\" + item.VideoUrl;
             }
-            return Ok();
+            return Ok( new { count = ads.Count, ads});
         }
 
         //[HttpPost("confirm")]

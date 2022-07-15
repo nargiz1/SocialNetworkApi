@@ -96,5 +96,39 @@ namespace FinalProject.Controllers
             }
             return Ok(messages);
         }
+        [HttpPost("isRead")]
+        public async Task<IActionResult> IsRead([FromBody] int messageId)
+        {
+            Message messageRead = await _db.Messages.FirstOrDefaultAsync(x => x.Id == messageId);
+            if (messageRead == null) return NotFound("Chat not found!");
+            messageRead.isRead = true;
+            _db.Messages.Update(messageRead);
+            await _db.SaveChangesAsync();
+            return Ok("Message is read!");
+        }
+        [HttpPost("areRead")]
+        public async Task<IActionResult> areRead([FromBody] MessagesReadDTO dto)
+        {
+            if (dto.PrivateChatId == null && dto.GroupChatId == null) return BadRequest();
+            //var chat = await _db.PrivateChats.FirstOrDefaultAsync(x => x.Id == dto.PrivateChatId);
+            //var group = await _db.GroupChats.FirstOrDefaultAsync(x => x.Id == dto.GroupChatId);
+            //if (chat == null && group == null) return NotFound("Chat is not found");
+            ApiUser user = await _userManager.FindByIdAsync(dto.UserId);
+            if (user == null) return NotFound("User not found!");
+            //var privateChatUser = await _db.PrivateChats.FirstOrDefaultAsync(x => x.Id == chat.Id && (x.UserOne.Id == user.Id || x.UserTwo.Id == user.Id));
+            //var groupChatUser = await _db.GroupChatToUser.FirstOrDefaultAsync(x => x.GroupChatId == group.Id && x.UserId == user.Id);
+            //if (privateChatUser == null && groupChatUser == null) return NotFound("User is not member of the chat");
+            var messagesToRead = _db.Messages.Where(x => (x.PrivateChatId == dto.PrivateChatId || x.GroupChatId == dto.GroupChatId) && x.UserId != user.Id);
+            if(messagesToRead != null)
+            {
+                foreach(var item in messagesToRead)
+                {
+                    item.isRead = true;
+                    _db.Messages.Update(item);
+                }
+            }
+            await _db.SaveChangesAsync();
+            return Ok("Messages are read");
+        }
     }
 }

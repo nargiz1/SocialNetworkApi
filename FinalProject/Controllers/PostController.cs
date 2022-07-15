@@ -159,7 +159,7 @@ namespace FinalProject.Controllers
             return Ok(post);
         }
         [HttpGet("getUserPosts")]
-        public async Task<IActionResult> GetUserPosts([FromQuery] string userId)
+        public async Task<IActionResult> GetUserPosts([FromBody] string userId)
         {
             int currentSkip =  0;
             int currentTake =  5;
@@ -183,13 +183,13 @@ namespace FinalProject.Controllers
                 item.Images.ForEach(x => x.ImageUrl = @"Resources\Images\" + x.ImageUrl);
                 item.Videos.ForEach(x => x.VideoUrl = @"Resources\Videos\" + x.VideoUrl);
             }
-            return Ok(posts);
+            return Ok(new { count = posts.Count, userPosts = posts });
         }
         [HttpGet("getAllPosts")]
-        public async Task<IActionResult> GetAllPosts()
+        public async Task<IActionResult> GetAllPosts([FromQuery] PaginationDTO dto)
         {
-            int currentSkip =  0;
-            int currentTake =  5;
+            int currentSkip = dto.Skip ?? 0;
+            int currentTake = dto.Take ?? 5;
             List<Post> posts = await _db.Posts
                 .Include(x => x.User)
                 .Include(x => x.Images)
@@ -207,7 +207,7 @@ namespace FinalProject.Controllers
                     item.User.ImageUrl = @"Resources\Images\" + item.User.ImageUrl;
                 }
             }
-            return Ok(posts);
+            return Ok( new { count = posts.Count, allPosts = posts });
         }
 
     }

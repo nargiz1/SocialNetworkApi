@@ -102,7 +102,6 @@ namespace FinalProject
                 options.AddPolicy("Admin", policy => policy.RequireRole("Admin"))
             );
 
-
             services.Configure<DataProtectionTokenProviderOptions>(options =>
             {
                 options.TokenLifespan = TimeSpan.FromHours(2);

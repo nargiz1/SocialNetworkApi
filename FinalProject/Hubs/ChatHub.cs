@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FinalProject.DTOs;
 using FinalProject.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 

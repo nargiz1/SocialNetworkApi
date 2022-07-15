@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace FinalProject.DTOs
 {
-    public class AdvertisementDTO
+    public class AdvertisementToUpdateDTO
     {
+        public int Id { get; set; }
         [MaxLength(2000)]
         public string Text { get; set; }
         public IFormFile ImageFile { get; set; }

@@ -134,9 +134,9 @@ namespace FinalProject.Controllers
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 
-                foreach (var userRole in userRoles)
+                foreach(var role in userRoles)
                 {
-                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                    authClaims.Add(new Claim("role", role));
                 }
 
                 var token = GetToken(authClaims);
@@ -211,6 +211,18 @@ namespace FinalProject.Controllers
                 user.CoverPicUrl = @"Resources\Images\" + user.CoverPicUrl;
             }
             return Ok(user);
+        }
+        [HttpGet("users")]
+        public IActionResult GetAllUsers([FromQuery] PaginationDTO dto)
+        {
+            int currentSkip = dto.Skip ?? 0;
+            int currentTake = dto.Take ?? 5;
+            List<ApiUser> users = _userManager.Users.Skip(currentSkip).Take(currentTake).ToList();
+            foreach (ApiUser user in users)
+            {
+                user.ImageUrl = (@"Resources\Images\" + user.ImageUrl);
+            }
+            return Ok( new { count = users.Count, users});
         }
 
         [Authorize]
@@ -320,18 +332,7 @@ namespace FinalProject.Controllers
             }
             return Ok(dto);
         }
-        [HttpGet("users")]
-        public IActionResult GetAllUsers([FromQuery]PaginationDTO dto)
-        {
-            int currentSkip = dto.Skip ?? 0;
-            int currentTake = dto.Take ?? 5;
-            List <ApiUser> users = _userManager.Users.ToList();
-            foreach (ApiUser user in users)
-            {
-                user.ImageUrl = (@"Resources\Images\" + user.ImageUrl);
-            }
-            return Ok(users.Skip(currentSkip).Take(currentTake));
-        }
+       
         [HttpGet("seacrhUser")]
         public IActionResult Search([FromQuery]string query)
         {
@@ -421,3 +422,5 @@ namespace FinalProject.Controllers
         //}
     }
 }
+
+

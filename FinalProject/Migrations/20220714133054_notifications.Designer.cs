@@ -4,14 +4,16 @@ using FinalProject.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FinalProject.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220714133054_notifications")]
+    partial class notifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -330,40 +332,6 @@ namespace FinalProject.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Messages");
-                });
-
-            modelBuilder.Entity("FinalProject.Models.Notification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FromUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ToUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("Updated")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FromUserId");
-
-                    b.HasIndex("ToUserId");
-
-                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("FinalProject.Models.Post", b =>
@@ -752,21 +720,6 @@ namespace FinalProject.Migrations
                     b.Navigation("PrivateChat");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("FinalProject.Models.Notification", b =>
-                {
-                    b.HasOne("FinalProject.Models.ApiUser", "FromUser")
-                        .WithMany()
-                        .HasForeignKey("FromUserId");
-
-                    b.HasOne("FinalProject.Models.ApiUser", "ToUser")
-                        .WithMany()
-                        .HasForeignKey("ToUserId");
-
-                    b.Navigation("FromUser");
-
-                    b.Navigation("ToUser");
                 });
 
             modelBuilder.Entity("FinalProject.Models.Post", b =>

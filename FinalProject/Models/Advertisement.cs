@@ -13,6 +13,7 @@ namespace FinalProject.Models
         public string ImageUrl { get; set; }
         public string VideoUrl { get; set; }
         public bool IsConfirmed { get; set; }
+        public bool IsExpired { get; set; }
         public DateTime Deadline { get; set; }
     }
 }
