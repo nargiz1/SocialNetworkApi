@@ -183,7 +183,8 @@ namespace FinalProject.Controllers
                 item.Images.ForEach(x => x.ImageUrl = @"Resources\Images\" + x.ImageUrl);
                 item.Videos.ForEach(x => x.VideoUrl = @"Resources\Videos\" + x.VideoUrl);
             }
-            return Ok(new { count = posts.Count, userPosts = posts });
+            int count = _db.Posts.Where(x => x.UserId == userId).Count();
+            return Ok(new { count, userPosts = posts });
         }
         [HttpGet("getAllPosts")]
         public async Task<IActionResult> GetAllPosts([FromQuery] PaginationDTO dto)
@@ -207,7 +208,8 @@ namespace FinalProject.Controllers
                     item.User.ImageUrl = @"Resources\Images\" + item.User.ImageUrl;
                 }
             }
-            return Ok( new { count = posts.Count, allPosts = posts });
+            int count = _db.Posts.Count();
+            return Ok( new { count, allPosts = posts });
         }
 
     }

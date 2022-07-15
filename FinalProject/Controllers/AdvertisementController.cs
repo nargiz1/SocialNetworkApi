@@ -120,7 +120,8 @@ namespace FinalProject.Controllers
                 item.ImageUrl = @"Resources\Images\" + item.ImageUrl;
                 item.VideoUrl = @"Resources\Videos\" + item.VideoUrl;
             }
-            return Ok( new { count = ads.Count, ads});
+            int count = _db.Advertisements.Count();
+            return Ok( new { count, ads});
         }
 
         //[HttpPost("confirm")]

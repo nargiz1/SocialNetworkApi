@@ -222,7 +222,8 @@ namespace FinalProject.Controllers
             {
                 user.ImageUrl = (@"Resources\Images\" + user.ImageUrl);
             }
-            return Ok( new { count = users.Count, users});
+            int count = _userManager.Users.Count();
+            return Ok( new { count, users});
         }
 
         [Authorize]
