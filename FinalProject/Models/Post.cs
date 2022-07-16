@@ -15,6 +15,7 @@ namespace FinalProject.Models
         public bool IsPrivate { get; set; }
         public string Location { get; set; }
         public bool IsStory { get; set; }
+        public bool CommentsExist { get; set; }
         public string UserId { get; set; }
         public ApiUser User { get; set; }
         public List<PostImage> Images { get; set; }

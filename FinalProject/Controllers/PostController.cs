@@ -48,7 +48,8 @@ namespace FinalProject.Controllers
                 IsPrivate = dto.IsPrivate,
                 Location = dto.Location,
                 UserId = user.Id,
-                IsStory = dto.IsStory
+                IsStory = dto.IsStory,
+                CommentsExist = true
             };
             await _db.Posts.AddAsync(newPost);
             await _db.SaveChangesAsync();
@@ -91,6 +92,16 @@ namespace FinalProject.Controllers
             }
             //if (newPost.IsStory == true) await ExpireStory(newPost.Id);
             return Ok("Post added successfully!");
+        }
+        [HttpPost("disableUnableComments")]
+        private async Task<IActionResult> DisableUnableComments([FromBody] int? postId)
+        {
+            Post postToUpdate = await _db.Posts.FirstOrDefaultAsync(x => x.Id == postId);
+            if (postToUpdate == null) return NotFound("Post not found");
+            postToUpdate.CommentsExist = !postToUpdate.CommentsExist;
+            _db.Posts.Update(postToUpdate);
+            await _db.SaveChangesAsync();
+            return Ok();
         }
 
         [HttpPost("story")]
@@ -198,7 +209,7 @@ namespace FinalProject.Controllers
                 .Include(x => x.Likes)
                 .Include(x => x.Comments)
                 .ThenInclude(x => x.Comments)
-                .ThenInclude(x => x.Likes).Skip(currentSkip).Take(currentTake).OrderByDescending(x => x.Created).ToListAsync();
+                .ThenInclude(x => x.Likes).OrderByDescending(x => x.Created).Skip(currentSkip).Take(currentTake).ToListAsync();
             foreach (var item in posts)
             {
                 item.Images.ForEach(x => x.ImageUrl = @"Resources\Images\" + x.ImageUrl);

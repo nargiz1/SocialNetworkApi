@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -197,6 +198,7 @@ namespace FinalProject.Controllers
             {
                 user.CoverPicUrl = @"Resources\Images\" + user.CoverPicUrl;
             }
+            user.SocialMediaLinks = await _db.SocialMediaLinks.Where(x => x.UserId == user.Id).ToListAsync();
             return Ok(user);
         }
         [Authorize]
@@ -205,11 +207,15 @@ namespace FinalProject.Controllers
         {
             if (userId == null) return BadRequest("Id is null");
             var user = await _userManager.FindByIdAsync(userId);
-            user.ImageUrl = @"Resources\Images\" + user.ImageUrl;
+            if(user.ImageUrl != null)
+            {
+                user.ImageUrl = @"Resources\Images\" + user.ImageUrl;
+            }
             if (user.CoverPicUrl != null && !user.CoverPicUrl.Contains(@"Resources\Images\"))
             {
                 user.CoverPicUrl = @"Resources\Images\" + user.CoverPicUrl;
             }
+            user.SocialMediaLinks = await _db.SocialMediaLinks.Where(x => x.UserId == user.Id).ToListAsync();
             return Ok(user);
         }
         [HttpGet("users")]
@@ -363,7 +369,7 @@ namespace FinalProject.Controllers
             return token;
         }
         [HttpPost("disableUnableUser")]
-        [Authorize(Policy ="Admin")]
+        [Authorize("Admin")]
         public async Task<IActionResult> DisableUnableUser([FromBody] string UserId)
         {
             var user = await _userManager.FindByIdAsync(UserId);

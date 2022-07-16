@@ -113,7 +113,7 @@ namespace FinalProject.Controllers
         {
             int currentSkip = dto.Skip ?? 1;
             int currentTake = dto.Take ?? 5;
-            List<Advertisement> ads = _db.Advertisements.Skip(currentSkip).Take(currentTake).OrderByDescending(x => x.Created).ToList();
+            List<Advertisement> ads = _db.Advertisements.OrderByDescending(x => x.Created).Skip(currentSkip).Take(currentTake).ToList();
             foreach (var item in ads)
             {
                 if(item.ImageUrl != null )
