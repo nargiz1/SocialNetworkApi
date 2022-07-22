@@ -208,7 +208,7 @@ namespace FinalProject.Controllers
                     item.User.ImageUrl = @"Resources\Images\" + item.User.ImageUrl;
                 }
             }
-            List<Advertisement> ads = _db.Advertisements.OrderByDescending(x => x.Created).ToList();
+            List<Advertisement> ads = _db.Advertisements.OrderByDescending(x => x.Created).Where(x=> x.IsExpired == false).ToList();
             foreach (var item in ads)
             {
                 if (item.ImageUrl != null)

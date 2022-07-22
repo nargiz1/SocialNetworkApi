@@ -31,7 +31,7 @@ namespace FinalProject.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create ([FromForm] StoryDTO dto)
         {
-            if (dto.ImageFile == null && dto.VideoFile == null) return BadRequest("Story cannot be empty");
+            if (dto.File == null) return BadRequest("Story cannot be empty");
             var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
             ApiUser user = await _userManager.FindByEmailAsync(userEmail);
             Story newStory = new Story()
@@ -39,8 +39,8 @@ namespace FinalProject.Controllers
                 UserId = user.Id,
                 Created = DateTime.Now
             };
-            if (dto.ImageFile != null && Files.IsvalidSize(dto.ImageFile, 500)) newStory.ImageUrl = Files.Upload(dto.ImageFile, "Images");
-            if (dto.VideoFile != null && Files.IsvalidSize(dto.VideoFile, 1000)) newStory.VideoUrl = Files.Upload(dto.VideoFile, "Videos");
+            if (dto.File.IsImage() && Files.IsvalidSize(dto.File, 500)) newStory.ImageUrl = Files.Upload(dto.File, "Images");
+            if (dto.File.IsVideo() && Files.IsvalidSize(dto.File, 1000)) newStory.VideoUrl = Files.Upload(dto.File, "Videos");
             await _db.Stories.AddAsync(newStory);
             await _db.SaveChangesAsync();
             return Ok(newStory);

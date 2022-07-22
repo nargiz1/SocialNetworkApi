@@ -98,8 +98,8 @@ namespace FinalProject.Controllers
             client.UseDefaultCredentials = false;
             client.Credentials = new NetworkCredential("socialnetworkproj1@gmail.com", "ftdmmjgojxqtyapp");
             client.EnableSsl = true;
-
-            var message = await Extensions.SendMail("socialnetworkproj1@gmail.com", newUser.Email, link, "Confirm Email", "Confirm");
+            string text = "Please click the button to confirm your email adress!";
+            var message = await Extensions.SendMail("socialnetworkproj1@gmail.com", newUser.Email, link, "Confirm Email", "Confirm", text);
             client.Send(message);
             message.Dispose();
             return Ok();
@@ -241,19 +241,23 @@ namespace FinalProject.Controllers
             var userFromApp = await _userManager.FindByIdAsync(dto.UserId);
             var userFromAppRole = await _userManager.GetRolesAsync(user);
             if (userFromApp != user && userFromAppRole[0] != "Admin") return Unauthorized();
-            //if (dto.SocialMediaLinks != null)
-            //{
-            //    foreach (string item in dto.SocialMediaLinks)
-            //    {
-            //        SocialMediaLink newLink = new SocialMediaLink()
-            //        {
-            //            Link = item,
-            //            UserId = user.Id
-            //        };
-            //        _db.SocialMediaLinks.Add(newLink);
-            //    }
-            //    _db.SaveChanges();
-            //}
+            if (dto.SocialMediaLinks != null)
+            {
+                foreach (string item in dto.SocialMediaLinks)
+                {
+                    var duplicate = await _db.SocialMediaLinks.FirstOrDefaultAsync(x => x.UserId == userFromApp.Id && x.Link == item);
+                    if(duplicate == null)
+                    {
+                        SocialMediaLink newLink = new SocialMediaLink()
+                        {
+                            UserId = userFromApp.Id,
+                            Link = item
+                        };
+                        await _db.SocialMediaLinks.AddAsync(newLink);
+                    }
+                }
+                _db.SaveChanges();
+            }
             userFromApp.FullName = dto.FullName;
             userFromApp.BirthDate = dto.BirhtDate;
             userFromApp.RelationshipStatus = dto.RelationshipStatus;
@@ -306,8 +310,8 @@ namespace FinalProject.Controllers
             SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
             client.Credentials = new NetworkCredential("nargizramazanova28@gmail.com", "pzlealxmwnlqtxot");
             client.EnableSsl = true;
-
-            var message = await Extensions.SendMail("socialnetworkproj1@gmail.com", user.Email, link, "Reset Password", "Reset Password");
+            string text = "Please click the button to reset your password!";
+            var message = await Extensions.SendMail("socialnetworkproj1@gmail.com", user.Email, link, "Reset Password", "Reset Password", text);
 
             client.Send(message);
             message.Dispose();

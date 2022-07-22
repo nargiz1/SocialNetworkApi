@@ -8,7 +8,6 @@ namespace FinalProject.DTOs
 {
     public class StoryDTO
     {
-        public IFormFile ImageFile { get; set; }
-        public IFormFile VideoFile { get; set; }
+        public IFormFile File { get; set; }
     }
 }
