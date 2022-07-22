@@ -48,7 +48,6 @@ namespace FinalProject.Controllers
                 IsPrivate = dto.IsPrivate,
                 Location = dto.Location,
                 UserId = user.Id,
-                IsStory = dto.IsStory,
                 CommentsExist = true
             };
             await _db.Posts.AddAsync(newPost);
@@ -90,27 +89,16 @@ namespace FinalProject.Controllers
                     }
                 }
             }
-            //if (newPost.IsStory == true) await ExpireStory(newPost.Id);
             return Ok("Post added successfully!");
         }
         [HttpPost("disableUnableComments")]
-        private async Task<IActionResult> DisableUnableComments([FromBody] int? postId)
+        public async Task<IActionResult> DisableUnableComments([FromBody] int? postId)
         {
             Post postToUpdate = await _db.Posts.FirstOrDefaultAsync(x => x.Id == postId);
             if (postToUpdate == null) return NotFound("Post not found");
             postToUpdate.CommentsExist = !postToUpdate.CommentsExist;
             _db.Posts.Update(postToUpdate);
             await _db.SaveChangesAsync();
-            return Ok();
-        }
-
-        [HttpPost("story")]
-        public async Task<IActionResult> ExpireStory([FromBody] int postId)
-        {
-            Post story = await _db.Posts.FirstOrDefaultAsync(x => x.Id == postId);
-            if (story == null) return NotFound("Story not found!");
-            await Task.Delay((int)(DateTime.Now.AddSeconds(70)).Subtract(DateTime.Now).TotalMilliseconds);
-            await Delete(story.Id);
             return Ok();
         }
 
@@ -153,7 +141,7 @@ namespace FinalProject.Controllers
             return Ok(postToUpdate);
         }
         [HttpGet("getPost")]
-        public async Task<IActionResult> GetPost([FromBody] int Id)
+        public async Task<IActionResult> GetPost([FromQuery] int postId)
         {
             var post = await _db.Posts
                 .Include(x => x.User)
@@ -163,17 +151,17 @@ namespace FinalProject.Controllers
                 .Include(x => x.Comments)
                 .ThenInclude(x => x.Comments)
                 .ThenInclude(x => x.Likes)
-                .FirstOrDefaultAsync(x => x.Id == Id);
+                .FirstOrDefaultAsync(x => x.Id == postId);
             if (post == null) return NotFound();
             post.Images.ForEach(x => x.ImageUrl = @"Resources\Images\" + x.ImageUrl);
             post.Videos.ForEach(x => x.VideoUrl = @"Resources\Videos\" + x.VideoUrl);
             return Ok(post);
         }
         [HttpGet("getUserPosts")]
-        public async Task<IActionResult> GetUserPosts([FromBody] string userId)
+        public async Task<IActionResult> GetUserPosts([FromQuery] string userId, PaginationDTO dto)
         {
-            int currentSkip =  0;
-            int currentTake =  5;
+            int currentSkip =  dto.Skip ?? 0;
+            int currentTake = dto.Take ?? 5;
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null) return NotFound();
             List<Post> posts = await _db.Posts
@@ -209,7 +197,8 @@ namespace FinalProject.Controllers
                 .Include(x => x.Likes)
                 .Include(x => x.Comments)
                 .ThenInclude(x => x.Comments)
-                .ThenInclude(x => x.Likes).OrderByDescending(x => x.Created).Skip(currentSkip).Take(currentTake).ToListAsync();
+                .ThenInclude(x => x.Likes)
+                .OrderByDescending(x => x.Created).Skip(currentSkip).Take(currentTake).ToListAsync();
             foreach (var item in posts)
             {
                 item.Images.ForEach(x => x.ImageUrl = @"Resources\Images\" + x.ImageUrl);
@@ -219,8 +208,33 @@ namespace FinalProject.Controllers
                     item.User.ImageUrl = @"Resources\Images\" + item.User.ImageUrl;
                 }
             }
-            int count = _db.Posts.Count();
-            return Ok( new { count, allPosts = posts });
+            List<Advertisement> ads = _db.Advertisements.OrderByDescending(x => x.Created).ToList();
+            foreach (var item in ads)
+            {
+                if (item.ImageUrl != null)
+                    item.ImageUrl = @"Resources\Images\" + item.ImageUrl;
+                item.VideoUrl = @"Resources\Videos\" + item.VideoUrl;
+            }
+            List<object> all = new List<object>();
+            int k = 0;
+            for(int i=0; i<posts.Count; i++)
+            {
+                all.Add(posts[i]);
+                if(i%3==0)
+                {
+                    if(k< ads.Count)
+                    {
+                        all.Add(ads[k]);
+                        k++;
+                    }
+                    else
+                    {
+                        k = 0;
+                    }
+                }
+            }
+            int count = all.Count();
+            return Ok( new { count, allPosts = all });
         }
 
     }

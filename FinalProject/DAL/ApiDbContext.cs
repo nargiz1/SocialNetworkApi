@@ -26,5 +26,6 @@ namespace FinalProject.DAL
         public DbSet<GroupChat> GroupChats { get; set; }
         public DbSet<GroupChatToUser> GroupChatToUser { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Story> Stories { get; set; }
     }
 }

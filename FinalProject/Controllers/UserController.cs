@@ -238,29 +238,33 @@ namespace FinalProject.Controllers
         {
             if (!ModelState.IsValid) return BadRequest();
             var user = await _userManager.FindByEmailAsync(this.User.FindFirstValue(ClaimTypes.Email));
-            if (dto.SocialMediaLinks != null)
-            {
-                foreach (string item in dto.SocialMediaLinks)
-                {
-                    SocialMediaLink newLink = new SocialMediaLink()
-                    {
-                        Link = item,
-                        UserId = user.Id
-                    };
-                    _db.SocialMediaLinks.Add(newLink);
-                }
-                _db.SaveChanges();
-            }
-            user.FullName = dto.FullName;
-            user.RelationshipStatus = dto.RelationshipStatus;
-            user.Occupation = dto.Occupation;
-            user.Education = dto.Education;
-            user.Status = dto.Status;
-            user.Country = dto.Country;
-            user.PhoneNumber = dto.PhoneNumber;
+            var userFromApp = await _userManager.FindByIdAsync(dto.UserId);
+            var userFromAppRole = await _userManager.GetRolesAsync(user);
+            if (userFromApp != user && userFromAppRole[0] != "Admin") return Unauthorized();
+            //if (dto.SocialMediaLinks != null)
+            //{
+            //    foreach (string item in dto.SocialMediaLinks)
+            //    {
+            //        SocialMediaLink newLink = new SocialMediaLink()
+            //        {
+            //            Link = item,
+            //            UserId = user.Id
+            //        };
+            //        _db.SocialMediaLinks.Add(newLink);
+            //    }
+            //    _db.SaveChanges();
+            //}
+            userFromApp.FullName = dto.FullName;
+            userFromApp.BirthDate = dto.BirhtDate;
+            userFromApp.RelationshipStatus = dto.RelationshipStatus;
+            userFromApp.Occupation = dto.Occupation;
+            userFromApp.Education = dto.Education;
+            userFromApp.Status = dto.Status;
+            userFromApp.Country = dto.Country;
+            userFromApp.PhoneNumber = dto.PhoneNumber;
             
-            await _userManager.UpdateAsync(user);
-            return Ok(user);
+            await _userManager.UpdateAsync(userFromApp);
+            return Ok(userFromApp);
         }
         [HttpPost("profilePic")]
         public async Task<IActionResult> UpdateProfilePic([FromForm] UpdateUserProfilePicDTO dto)
@@ -300,7 +304,7 @@ namespace FinalProject.Controllers
             var EmailToken = await _userManager.GeneratePasswordResetTokenAsync(user);
             var link = "http://localhost:3000/reset?token=" + EmailToken+"&email="+user.Email;
             SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
-            client.Credentials = new NetworkCredential("nargizramazanova28@gmail.com", "");
+            client.Credentials = new NetworkCredential("nargizramazanova28@gmail.com", "pzlealxmwnlqtxot");
             client.EnableSsl = true;
 
             var message = await Extensions.SendMail("socialnetworkproj1@gmail.com", user.Email, link, "Reset Password", "Reset Password");

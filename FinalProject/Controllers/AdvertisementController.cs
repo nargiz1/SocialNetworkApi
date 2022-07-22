@@ -34,7 +34,9 @@ namespace FinalProject.Controllers
             {
                 Text = dto.Text,
                 Deadline = dto.Deadline,
-                IsExpired = false
+                IsExpired = false,
+                IsConfirmed = true,
+                Created = DateTime.Now
             };
             if (dto.ImageFile != null && Files.IsImage(dto.ImageFile) && Files.IsvalidSize(dto.ImageFile, 500))
             {
@@ -95,16 +97,16 @@ namespace FinalProject.Controllers
             advertisementToUpdate.Deadline = dto.Deadline;
             _db.Advertisements.Update(advertisementToUpdate);
             await _db.SaveChangesAsync();
-            return Ok("Advertisement updated");
+            return Ok(advertisementToUpdate);
         }
         [HttpGet("getAdv")]
         [Authorize]
-        public async Task<IActionResult> GetAdv([FromBody] int advId)
+        public async Task<IActionResult> GetAdv([FromQuery] int advId)
         {
             Advertisement adv = await _db.Advertisements.FirstOrDefaultAsync(x => x.Id == advId);
             if (adv == null) return NotFound("Advertisement not found!");
-            if (!adv.ImageUrl.Contains(@"Resources\Images\")) adv.ImageUrl = @"Resources\Images\" + adv.ImageUrl;
-            if (!adv.VideoUrl.Contains(@"Resources\Videos\")) adv.VideoUrl = @"Resources\Videos\" + adv.VideoUrl;
+            if (adv.ImageUrl != null && !adv.ImageUrl.Contains(@"Resources\Images\")) adv.ImageUrl = @"Resources\Images\" + adv.ImageUrl;
+            if (adv.VideoUrl != null && !adv.VideoUrl.Contains(@"Resources\Videos\")) adv.VideoUrl = @"Resources\Videos\" + adv.VideoUrl;
             return Ok(adv);
         }
         [HttpGet("getAll")]

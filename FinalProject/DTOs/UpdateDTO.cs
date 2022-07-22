@@ -11,11 +11,13 @@ namespace FinalProject.DTOs
 {
     public class UpdateDTO
     {
+        public string UserId { get; set; }
         [Required, MaxLength(1000)]
         public string FullName { get; set; }
         public string RelationshipStatus { get; set; }
         [MaxLength(500)]
         public string Occupation { get; set; }
+        public DateTime BirhtDate { get; set; }
         [MaxLength(1000)]
         public string Education { get; set; }
         [MaxLength(13)]
