@@ -1,12 +1,16 @@
 ﻿using FinalProject.DAL;
 using FinalProject.Models;
+using FinalProject.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -18,16 +22,19 @@ namespace FinalProject.Controllers
     {
         private readonly ApiDbContext _db;
         private readonly UserManager<ApiUser> _userManager;
+        private readonly IConfiguration _config;
 
-        public LikeController(ApiDbContext db, UserManager<ApiUser> userManager)
+
+        public LikeController(ApiDbContext db, UserManager<ApiUser> userManager, IConfiguration config)
         {
             _db = db;
             _userManager = userManager;
+            _config = config;
         }
         [HttpPost("likePost")]
         public async Task<IActionResult> LikePost([FromBody] int postId)
         {
-            Post post = await _db.Posts.Include(x => x.Videos).Include(x => x.Images).FirstOrDefaultAsync(x => x.Id == postId);
+            Post post = await _db.Posts.Include(x=> x.User).Include(x => x.Videos).Include(x => x.Images).FirstOrDefaultAsync(x => x.Id == postId);
             if (post == null) return NotFound();
             var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(userEmail);
@@ -42,6 +49,17 @@ namespace FinalProject.Controllers
 
             await _db.PostLikes.AddAsync(newLike);
             await _db.SaveChangesAsync();
+
+            var link = "http://localhost:3000";
+            SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
+            client.Credentials = new NetworkCredential("nargizramazanova28@gmail.com", _config["Mail:password"]);
+            client.EnableSsl = true;
+            string text = $"{user.UserName} liked your post!";
+            var message = await Extensions.SendMail("socialnetworkproj1@gmail.com", post.User.Email, link, "Like!", "Go to app", text);
+
+            client.Send(message);
+            message.Dispose();
+
             return Ok("post liked");
         }
         [HttpPost("removePostLike")]

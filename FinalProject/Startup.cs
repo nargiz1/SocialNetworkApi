@@ -133,8 +133,6 @@ namespace FinalProject
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/chat");
-                endpoints.MapHub<NotificationsHub>("/notifications");
-
             });
         }
     }

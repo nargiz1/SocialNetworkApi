@@ -1,13 +1,17 @@
 ﻿using FinalProject.DAL;
 using FinalProject.Models;
+using FinalProject.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -20,11 +24,13 @@ namespace FinalProject.Controllers
     {
         private readonly ApiDbContext _db;
         private readonly UserManager<ApiUser> _userManager;
+        private readonly IConfiguration _config;
 
-        public FollowController(ApiDbContext db, UserManager<ApiUser> userManager)
+        public FollowController(ApiDbContext db, UserManager<ApiUser> userManager, IConfiguration config)
         {
             _db = db;
             _userManager = userManager;
+            _config = config;
         }
 
         [HttpPost("follow")]
@@ -46,6 +52,18 @@ namespace FinalProject.Controllers
             };
             await _db.FollowModels.AddAsync(newFollow);
             await _db.SaveChangesAsync();
+
+            var link = "http://localhost:3000";
+            SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
+            client.Credentials = new NetworkCredential("nargizramazanova28@gmail.com", _config["Mail:password"]);
+            client.EnableSsl = true;
+            string text = $"{user.UserName} is now following you!";
+            var message = await Extensions.SendMail("socialnetworkproj1@gmail.com", userToFollow.Email, link, "Follower!", "Go to app", text);
+
+            client.Send(message);
+            message.Dispose();
+
+
             return Ok("You are following user now!");
         }
         [HttpPost("unFollow")]
@@ -62,6 +80,18 @@ namespace FinalProject.Controllers
             if (delete == null) return BadRequest("User not found");
             _db.FollowModels.Remove(delete);
             await _db.SaveChangesAsync();
+
+            var link = "http://localhost:3000";
+            SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
+            client.Credentials = new NetworkCredential("nargizramazanova28@gmail.com", _config["Mail:password"]);
+            client.EnableSsl = true;
+            string text = $"{user.UserName} unfollowed!";
+            var message = await Extensions.SendMail("socialnetworkproj1@gmail.com", userToUnFollow.Email, link, "Unfollow!", "Go to app", text);
+
+            client.Send(message);
+            message.Dispose();
+
+
             return Ok("You unfollowed user!");
         }
         [HttpPost("deleteFollower")]
@@ -70,10 +100,23 @@ namespace FinalProject.Controllers
             var userEmail = this.User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(userEmail);
 
-            var delete = _db.FollowModels.FirstOrDefault(x => x.FollowingUserId == followingUserId);
+            var followingUser = await _userManager.FindByIdAsync(followingUserId);
+            if (followingUser == null) return NotFound("User not found");
+            var delete = _db.FollowModels.FirstOrDefault(x => x.FollowingUserId == followingUser.Id);
             if (delete == null) return BadRequest("user is not following you");
             _db.FollowModels.Remove(delete);
             await _db.SaveChangesAsync();
+
+            var link = "http://localhost:3000";
+            SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
+            client.Credentials = new NetworkCredential("nargizramazanova28@gmail.com", _config["Mail:password"]);
+            client.EnableSsl = true;
+            string text = $"{user.UserName} deleted you from followers!";
+            var message = await Extensions.SendMail("socialnetworkproj1@gmail.com", followingUser.Email, link, "Unfollow!", "Go to app", text);
+
+            client.Send(message);
+            message.Dispose();
+
             return Ok("Follower deleted!");
         }
         [HttpGet("getFollowers")]

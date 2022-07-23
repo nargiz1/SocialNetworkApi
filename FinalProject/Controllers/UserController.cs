@@ -34,6 +34,7 @@ namespace FinalProject.Controllers
         private readonly SignInManager<ApiUser> _signInManager;
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IConfiguration _config;
         private readonly JwtHandler _jwtHandler;
 
         public UserController(ApiDbContext db,
@@ -41,7 +42,8 @@ namespace FinalProject.Controllers
             RoleManager<IdentityRole> roleManager,
             IConfiguration configuration,
             IHttpContextAccessor httpContextAccessor,
-            SignInManager<ApiUser> signInManager)
+            SignInManager<ApiUser> signInManager,
+            IConfiguration config)
         {
             _db = db;
             _userManager = userManager;
@@ -49,6 +51,7 @@ namespace FinalProject.Controllers
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
             _signInManager = signInManager;
+            _config = config;
         }
 
         [HttpPost("register")]
@@ -198,7 +201,7 @@ namespace FinalProject.Controllers
             {
                 user.CoverPicUrl = @"Resources\Images\" + user.CoverPicUrl;
             }
-            user.SocialMediaLinks = await _db.SocialMediaLinks.Where(x => x.UserId == user.Id).ToListAsync();
+            var socialMediaObjects = await _db.SocialMediaLinks.Where(x => x.UserId == user.Id).ToListAsync();
             return Ok(user);
         }
         [Authorize]
@@ -243,15 +246,15 @@ namespace FinalProject.Controllers
             if (userFromApp != user && userFromAppRole[0] != "Admin") return Unauthorized();
             if (dto.SocialMediaLinks != null)
             {
-                foreach (string item in dto.SocialMediaLinks)
+                foreach (var item in dto.SocialMediaLinks)
                 {
-                    var duplicate = await _db.SocialMediaLinks.FirstOrDefaultAsync(x => x.UserId == userFromApp.Id && x.Link == item);
+                    var duplicate = await _db.SocialMediaLinks.FirstOrDefaultAsync(x => x.UserId == userFromApp.Id && x.Link == item.Link);
                     if(duplicate == null)
                     {
                         SocialMediaLink newLink = new SocialMediaLink()
                         {
                             UserId = userFromApp.Id,
-                            Link = item
+                            Link = item.Link
                         };
                         await _db.SocialMediaLinks.AddAsync(newLink);
                     }
@@ -308,7 +311,7 @@ namespace FinalProject.Controllers
             var EmailToken = await _userManager.GeneratePasswordResetTokenAsync(user);
             var link = "http://localhost:3000/reset?token=" + EmailToken+"&email="+user.Email;
             SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
-            client.Credentials = new NetworkCredential("nargizramazanova28@gmail.com", "pzlealxmwnlqtxot");
+            client.Credentials = new NetworkCredential("nargizramazanova28@gmail.com", _config["Mail:password"]);
             client.EnableSsl = true;
             string text = "Please click the button to reset your password!";
             var message = await Extensions.SendMail("socialnetworkproj1@gmail.com", user.Email, link, "Reset Password", "Reset Password", text);

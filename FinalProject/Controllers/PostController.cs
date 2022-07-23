@@ -158,11 +158,11 @@ namespace FinalProject.Controllers
             return Ok(post);
         }
         [HttpGet("getUserPosts")]
-        public async Task<IActionResult> GetUserPosts([FromQuery] string userId, PaginationDTO dto)
+        public async Task<IActionResult> GetUserPosts([FromQuery] PaginationDTO dto)
         {
             int currentSkip =  dto.Skip ?? 0;
             int currentTake = dto.Take ?? 5;
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(dto.UserId);
             if (user == null) return NotFound();
             List<Post> posts = await _db.Posts
                 .Include(x => x.User)
@@ -172,7 +172,7 @@ namespace FinalProject.Controllers
                 .Include(x => x.Comments)
                 .ThenInclude(x => x.Comments)
                 .ThenInclude(x => x.Likes)
-                .Where(x => x.UserId == userId).OrderByDescending(x => x.Created).Skip(currentSkip).Take(currentTake).ToListAsync();
+                .Where(x => x.UserId == user.Id).OrderByDescending(x => x.Created).Skip(currentSkip).Take(currentTake).ToListAsync();
             foreach(var item in posts)
             {
                 if (!item.User.ImageUrl.Contains(@"Resources\Images\"))
@@ -182,11 +182,63 @@ namespace FinalProject.Controllers
                 item.Images.ForEach(x => x.ImageUrl = @"Resources\Images\" + x.ImageUrl);
                 item.Videos.ForEach(x => x.VideoUrl = @"Resources\Videos\" + x.VideoUrl);
             }
-            int count = _db.Posts.Where(x => x.UserId == userId).Count();
+            int count = _db.Posts.Where(x => x.UserId == user.Id).Count();
             return Ok(new { count, userPosts = posts });
         }
         [HttpGet("getAllPosts")]
         public async Task<IActionResult> GetAllPosts([FromQuery] PaginationDTO dto)
+        {
+            int currentSkip = dto.Skip ?? 0;
+            int currentTake = dto.Take ?? 5;
+            List<Post> posts = await _db.Posts
+                .Include(x => x.User)
+                .Include(x => x.Images)
+                .Include(x => x.Videos)
+                .Include(x => x.Likes)
+                .Include(x => x.Comments)
+                .ThenInclude(x => x.Comments)
+                .ThenInclude(x => x.Likes)
+                .Where(x=> x.IsPrivate == false)
+                .OrderByDescending(x => x.Created).Skip(currentSkip).Take(currentTake).ToListAsync();
+            foreach (var item in posts)
+            {
+                item.Images.ForEach(x => x.ImageUrl = @"Resources\Images\" + x.ImageUrl);
+                item.Videos.ForEach(x => x.VideoUrl = @"Resources\Videos\" + x.VideoUrl);
+                if (!item.User.ImageUrl.Contains(@"Resources\Images\"))
+                {
+                    item.User.ImageUrl = @"Resources\Images\" + item.User.ImageUrl;
+                }
+            }
+            List<Advertisement> ads = _db.Advertisements.OrderByDescending(x => x.Created).Where(x=> x.IsExpired == false).ToList();
+            foreach (var item in ads)
+            {
+                if (item.ImageUrl != null) item.ImageUrl = @"Resources\Images\" + item.ImageUrl;
+                if (item.VideoUrl != null) item.VideoUrl = @"Resources\Videos\" + item.VideoUrl;
+            }
+            List<object> all = new List<object>();
+            int k = 0;
+            for(int i=0; i<posts.Count; i++)
+            {
+                all.Add(posts[i]);
+                if(i%3==0)
+                {
+                    if(k< ads.Count)
+                    {
+                        all.Add(ads[k]);
+                        k++;
+                    }
+                    else
+                    {
+                        k = 0;
+                        all.Add(ads[k]);
+                    }
+                }
+            }
+            int count = all.Count;
+            return Ok( new { count, allPosts = all });
+        }
+        [HttpGet("allPostsForAdmin")]
+        public async Task<IActionResult> GetAllPostsForAdmin([FromQuery] PaginationDTO dto)
         {
             int currentSkip = dto.Skip ?? 0;
             int currentTake = dto.Take ?? 5;
@@ -208,33 +260,8 @@ namespace FinalProject.Controllers
                     item.User.ImageUrl = @"Resources\Images\" + item.User.ImageUrl;
                 }
             }
-            List<Advertisement> ads = _db.Advertisements.OrderByDescending(x => x.Created).Where(x=> x.IsExpired == false).ToList();
-            foreach (var item in ads)
-            {
-                if (item.ImageUrl != null)
-                    item.ImageUrl = @"Resources\Images\" + item.ImageUrl;
-                item.VideoUrl = @"Resources\Videos\" + item.VideoUrl;
-            }
-            List<object> all = new List<object>();
-            int k = 0;
-            for(int i=0; i<posts.Count; i++)
-            {
-                all.Add(posts[i]);
-                if(i%3==0)
-                {
-                    if(k< ads.Count)
-                    {
-                        all.Add(ads[k]);
-                        k++;
-                    }
-                    else
-                    {
-                        k = 0;
-                    }
-                }
-            }
-            int count = all.Count();
-            return Ok( new { count, allPosts = all });
+            int count = _db.Posts.Count();
+            return Ok(new { count, allPosts = posts });
         }
 
     }

@@ -70,6 +70,7 @@ namespace FinalProject.Utils
             </body>
             </html>
             ";
+
             MailAddress from = new MailAddress(fromUser);
             MailAddress to = new MailAddress(toUser);
             MailMessage message = new MailMessage(from, to);

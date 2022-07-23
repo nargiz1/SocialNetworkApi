@@ -25,6 +25,6 @@ namespace FinalProject.DTOs
         [MaxLength(1000)]
         public string Country { get; set; }
         public string PhoneNumber { get; set; }
-        public List<string> SocialMediaLinks { get; set; }
+        public List<SocialMediaLinkDTO> SocialMediaLinks { get; set; }
     }
 }

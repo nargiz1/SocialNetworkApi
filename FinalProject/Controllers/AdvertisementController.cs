@@ -118,9 +118,8 @@ namespace FinalProject.Controllers
             List<Advertisement> ads = _db.Advertisements.OrderByDescending(x => x.Created).Skip(currentSkip).Take(currentTake).ToList();
             foreach (var item in ads)
             {
-                if(item.ImageUrl != null )
-                item.ImageUrl = @"Resources\Images\" + item.ImageUrl;
-                item.VideoUrl = @"Resources\Videos\" + item.VideoUrl;
+                if(item.ImageUrl != null ) item.ImageUrl = @"Resources\Images\" + item.ImageUrl;
+                if(item.VideoUrl != null) item.VideoUrl = @"Resources\Videos\" + item.VideoUrl;
             }
             int count = _db.Advertisements.Count();
             return Ok( new { count, ads});

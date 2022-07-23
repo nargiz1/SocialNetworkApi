@@ -73,9 +73,10 @@ namespace FinalProject.Controllers
         {
             if (storyId == null) return BadRequest();
             Story story = await _db.Stories.Include(x=> x.User).FirstOrDefaultAsync(x => x.Id == storyId);
+            if (story == null) return NotFound("Story not found");
             if (story.ImageUrl != null && !story.ImageUrl.Contains(@"Resources\Images")) story.ImageUrl = @"Resources\Images\" + story.ImageUrl;
             if (story.VideoUrl != null && !story.VideoUrl.Contains(@"Resources\Videos")) story.VideoUrl = @"Resources\Videos\" + story.VideoUrl;
-            if (story == null) return NotFound("Story not found");
+            if (story.User.ImageUrl != null && !story.User.ImageUrl.Contains(@"Resources\Images")) story.User.ImageUrl = @"Resources\Images\" + story.User.ImageUrl;
             return Ok(story);
         }
         [HttpGet("getAll")]
@@ -84,6 +85,7 @@ namespace FinalProject.Controllers
             List<Story> stories = await _db.Stories.ToListAsync();
             stories.ForEach(x => x.ImageUrl = @"Resources\Images\" + x.ImageUrl);
             stories.ForEach(x => x.VideoUrl = @"Resources\Videos\" + x.VideoUrl);
+            stories.ForEach(x => x.User.ImageUrl = @"Resources\Images\" + x.User.ImageUrl);
             return Ok(stories);
         }
 
