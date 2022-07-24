@@ -35,7 +35,6 @@ namespace FinalProject.Controllers
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _config;
-        private readonly JwtHandler _jwtHandler;
 
         public UserController(ApiDbContext db,
             UserManager<ApiUser> userManager,
@@ -389,47 +388,6 @@ namespace FinalProject.Controllers
             await _userManager.UpdateAsync(user);
             return Ok(user);
         }
-
-        [HttpPost("ExternalLogin")]
-        public async Task<IActionResult> ExternalLogin([FromBody] ExternalAuthDto externalAuth)
-        {
-            var payload = await _jwtHandler.VerifyGoogleToken(externalAuth);
-            if (payload == null)
-                return BadRequest("Invalid External Authentication.");
-            var info = new UserLoginInfo(externalAuth.Provider, payload.Subject, externalAuth.Provider);
-            var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-            if (user == null)
-            {
-                user = await _userManager.FindByEmailAsync(payload.Email);
-                if (user == null)
-                {
-                    user = new ApiUser { Email = payload.Email, UserName = payload.Email };
-                    await _userManager.CreateAsync(user);
-                    //prepare and send an email for the email confirmation
-                    await _userManager.AddToRoleAsync(user, "Member");
-                    await _userManager.AddLoginAsync(user, info);
-                }
-                else
-                {
-                    await _userManager.AddLoginAsync(user, info);
-                }
-            }
-            if (user == null)
-                return BadRequest("Invalid External Authentication.");
-            var authClaims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                };
-            var userRoles = await _userManager.GetRolesAsync(user);
-            foreach (var userRole in userRoles)
-            {
-                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-            }
-            var token = GetToken(authClaims);
-            return Ok(new { Token = token, IsAuthSuccessful = true });
-        }
-
 
         //[HttpPost("roles")]
         //public async Task<IActionResult> InitRoles()

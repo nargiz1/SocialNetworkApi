@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.IO;
 using System.Net.Http.Headers;
 
@@ -25,7 +26,7 @@ namespace FinalProject.Utils
             var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
             if (file.Length > 0)
             {
-                var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                var fileName = Guid.NewGuid().ToString() + "-" + file.FileName;
                 var fullPath = Path.Combine(pathToSave, fileName);
                 using (var stream = new FileStream(fullPath, FileMode.Create))
                 {

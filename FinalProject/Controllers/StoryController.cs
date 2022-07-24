@@ -82,10 +82,13 @@ namespace FinalProject.Controllers
         [HttpGet("getAll")]
         public async Task<IActionResult> GetAll()
         {
-            List<Story> stories = await _db.Stories.ToListAsync();
-            stories.ForEach(x => x.ImageUrl = @"Resources\Images\" + x.ImageUrl);
-            stories.ForEach(x => x.VideoUrl = @"Resources\Videos\" + x.VideoUrl);
-            stories.ForEach(x => x.User.ImageUrl = @"Resources\Images\" + x.User.ImageUrl);
+            List<Story> stories = await _db.Stories.Include(x=> x.User).ToListAsync();
+            foreach(var item in stories)
+            {
+                if (item.ImageUrl != null) item.ImageUrl = @"Resources\Images\" + item.ImageUrl;
+                if (item.VideoUrl != null) item.VideoUrl = @"Resources\Videos\" + item.VideoUrl;
+                if (item.User.ImageUrl != null && !item.User.ImageUrl.Contains(@"Resources\Images\")) item.User.ImageUrl = @"Resources\Images\" + item.User.ImageUrl;
+            }
             return Ok(stories);
         }
 
